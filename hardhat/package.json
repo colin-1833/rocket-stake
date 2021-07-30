@@ -1,0 +1,41 @@
+{
+  "name": "hardhat",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "deploy-client": "",
+    "deploy-goerli": "rm -rf ./cache ./deployments/goerli ./artifacts && npx hardhat deploy --network goerli --export ../client/src/deployments/goerli.json",
+    "deploy-ropsten": "rm -rf ./cache ./deployments/ropsten ./artifacts && npx hardhat deploy --network ropsten --export ../client/src/deployments/ropsten.json",
+    "deploy-rinkeby": "rm -rf ./cache ./deployments/rinkeby ./artifacts && npx hardhat deploy --network rinkeby --export ../client/src/deployments/rinkeby.json",
+    "deploy-mainnet": "rm -rf ./cache ./artifacts && npx hardhat deploy --network mainnet --export ../client/src/deployments/mainnet.json",
+    "deploy-kovan": "rm -rf ./cache ./artifacts ./deployments/kovan && npx hardhat deploy --network kovan --export ../client/src/deployments/kovan.json",
+    "start": "rm -rf ./cache ./artifacts && npx hardhat deploy --reset && npx hardhat node --show-accounts --export ../client/src/deployments/local.json",
+    "size": "npx hardhat deploy && npx hardhat size-contracts",
+    "test": "npx hardhat test test/flash-loans.ts && npx hardhat test test/storage-key-management.ts && npx hardhat test test/staking-reth-collateral-limits.ts && npx hardhat test test/withdrawal-rules.ts"
+  },
+  "devDependencies": {
+    "@nomiclabs/buidler": "^1.4.8",
+    "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@^0.3.0-beta.7",
+    "@nomiclabs/hardhat-waffle": "^2.0.0",
+    "@openzeppelin/contracts": "^4.0.0",
+    "@types/bluebird": "^3.5.36",
+    "@types/jest": "^26.0.22",
+    "@types/mocha": "^8.2.2",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.3.0",
+    "ethers": "^5.1.3",
+    "hardhat": "^2.2.0",
+    "hardhat-contract-sizer": "^2.0.3",
+    "hardhat-deploy": "^0.7.5",
+    "jest": "^26.6.3",
+    "mocha": "^8.3.2",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "@types/node": "^16.3.2",
+    "bluebird": "^3.7.2",
+    "dotenv": "^10.0.0"
+  }
+}

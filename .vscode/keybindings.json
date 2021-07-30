@@ -1,0 +1,7 @@
+[
+    { 
+        "key": "cmd+y",           
+        "command": "redo",
+        "when": "textInputFocus && !editorReadonly"
+    }
+]

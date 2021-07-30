@@ -1,0 +1,18 @@
+{
+    "workbench.tree.indent": 15,
+    // Controls if suggestions should automatically show up when typing trigger characters
+    "editor.suggestOnTriggerCharacters": false,
+
+    // Controls if suggestions should be accepted 'Enter' - in addition to 'Tab'. Helps to avoid ambiguity between inserting new lines or accepting suggestions.
+    "editor.acceptSuggestionOnEnter": "off",
+    "editor.parameterHints": false,
+    "files.exclude": {
+        
+    },
+    "javascript.suggest.autoImports": false,
+    "typescript.suggest.autoImports": false,
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "terminal.integrated.scrollback": 10000,
+    "solidity.compileUsingRemoteVersion": "v0.8.0+commit.c7dfd78e",
+    "solidity.defaultCompiler": "remote"
+}

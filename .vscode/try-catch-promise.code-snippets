@@ -1,0 +1,11 @@
+{
+  "": {
+    "scope": "javascript,typescript",
+    "prefix": "tcp",
+    "body": [
+      "($1) => new Promise(async (resolve, reject) => { try {",
+      "\t",
+      "} catch (err) { reject(err) }});"
+    ]
+  }
+}

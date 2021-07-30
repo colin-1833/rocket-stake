@@ -1,0 +1,11 @@
+{
+  "short_name": "Rocket Stake",
+  "name": "Stake Ether using Rocket Pool's rETH token.",
+  "icons": [
+    
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#222831",
+  "background_color": "#F05454"
+}
