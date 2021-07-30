@@ -14,7 +14,7 @@ RocketStake's web frontend allows ETH holders to "lend" their ETH to RocketStake
 
 # Can I Withdraw Whenever I Want?
 
-Withdraws from RocketStake are capped by the amount of available ETH in the [Rocket Pool's rETH token contract](https://github.com/rocket-pool/rocketpool/blob/master/contracts/contract/token/RocketTokenRETH.sol). This means that it could be hard to withdraw from RocketStake before withdrawals are enabled on ETH 2.0. If you are not familiar with ETH 2.0, please read up on the [Ethereum Foundation's ETH 2.0 learning materials](https://ethereum.org/en/eth2/).
+Withdrawals from RocketStake are capped by the amount of available ETH in the [Rocket Pool's rETH token contract](https://github.com/rocket-pool/rocketpool/blob/master/contracts/contract/token/RocketTokenRETH.sol). This means that it could be hard to withdraw from RocketStake before withdrawals are enabled on ETH 2.0. If you are not familiar with ETH 2.0, please read up on the [Ethereum Foundation's ETH 2.0 learning materials](https://ethereum.org/en/eth2/).
 
 # What is Rocket Pool and rETH?
 

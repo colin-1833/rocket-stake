@@ -250,9 +250,13 @@ contract RocketStake is IRocketStake, IFlashLender {
         if (stakers[staker].exists != true) {
             return 0;
         }
+        uint256 balance_of_reth = _rethContract().balanceOf(address(this));
+        if (balance_of_reth == 0) {
+            return 0;
+        }
         return stakers[staker].staked_reth
             .mul(flash_loan_staker_fees.sub(stakers[staker].flash_loan_fee_entitlement_floor))
-            .div(_rethContract().balanceOf(address(this)));
+            .div(balance_of_reth);
     }
     // secret sauce to safely redistribute flash loan fees to stakers
     function _calcNextFlashLoanFeeEntitlementFloor(

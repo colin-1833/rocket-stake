@@ -3,7 +3,7 @@
   "chainId": "1337",
   "contracts": {
     "RocketTokenRETH": {
-      "address": "0x49f19ceA6185C2410E65c849d78bc006960CbC91",
+      "address": "0x47e8421c863e9C6Ed4E3117Bae5a1Ea640b1858E",
       "abi": [
         {
           "inputs": [],
@@ -399,7 +399,7 @@
       ]
     },
     "RocketDepositPool": {
-      "address": "0x229149Da2d16F45745d6ddf97778E51eA37F8256",
+      "address": "0x5747420fAb9F613D93E2b8D362478C0f556d437B",
       "abi": [
         {
           "inputs": [
@@ -422,7 +422,7 @@
       ]
     },
     "RocketStorage": {
-      "address": "0xE3589e3A5D2eb25D49225852652Db20f8A1697b6",
+      "address": "0xda82D3D84b66AaE2240ebc5802aeF5A1D77E8036",
       "abi": [
         {
           "inputs": [],
@@ -469,7 +469,7 @@
       ]
     },
     "RocketStake": {
-      "address": "0x9E4881a97CFC4a3A8ffc533a60F9acA0D8c03472",
+      "address": "0x03f5Cdf8B209B89df2C7a6C1047dF4E5473ebcE9",
       "abi": [
         {
           "inputs": [
@@ -1069,7 +1069,7 @@
       ]
     },
     "FlashLoanBorrower": {
-      "address": "0xA5884d5201E56C3822f94651E7342a2d8A382d1a",
+      "address": "0x54C4Fd844074D3c94D253CBD617310486C77FeB3",
       "abi": [
         {
           "inputs": [
