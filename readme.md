@@ -18,7 +18,7 @@ Withdraws from RocketStake are capped by the amount of available ETH in the [Roc
 
 # What is Rocket Pool and rETH?
 
-Rocket Pool is a network of smart contracts that incentive decentralized staking on the ETH 2.0 network. Learn more about Rocket Pool by going to their [site](https://rocketpool.net) or interacting with its discord community (one of the best in the crypto space). Their contracts are slated to deploy on Prater (Goerli) and then Mainnet sometime in late 2021. [Read more about how Rocket Pool works](https://docs.rocketpool.net/guides/staking/overview.html#how-rocket-pool-works).
+Rocket Pool is a network of smart contracts that incentive decentralized staking on the ETH 2.0 network. Learn more about Rocket Pool by going to their [site](https://rocketpool.net) or interacting with their discord community (one of the best in the crypto space). Their contracts are slated to deploy on Prater (Goerli) and then Mainnet sometime in late 2021. [Read more about how Rocket Pool works](https://docs.rocketpool.net/guides/staking/overview.html#how-rocket-pool-works).
 
 # Tax Disclaimer
 
