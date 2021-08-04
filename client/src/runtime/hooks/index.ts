@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as constants from '../constants/index';
 import query_string from 'query-string';
+import config from '../../config';
 import {
   networks as deployment_networks
 } from '../../deployments/index';
@@ -162,17 +163,11 @@ export const use_hardhat = (runtime: Pick<Runtime, 'queries'|'ethereum'>) => {
   if (String(ethereum.connected_chain_id) === 'null') {
     return null;
   }
-  if (
-    ethereum.connected_network.name === 'kovan'
-    || ethereum.connected_network.name === 'ropsten'
-    || ethereum.connected_network.name === 'rinkeby'
-    || ethereum.connected_network.name === 'goerli'
-    || ethereum.connected_network.name === 'local'
-  ) {
+  if (ethereum.connected_network.name === 'goerli') {
     return deployment_networks[ethereum.connected_network.name];
   }
   return null;
-}
+};
 
 export const use_reth_collateral = (runtime: Pick<Runtime, 'queries'|'ethereum'|'hardhat'>): RethCollateral => {
   const {
@@ -230,7 +225,10 @@ export const use_account = (runtime: Pick<Runtime, 'queries'|'task'|'ethereum'|'
   ] = useState(true);
   const [total_reth, setTotalRETH] = useState(0);
   const [staker, setStaker] = useState<Staker>({
-    staked_reth: 0,
+    blocks_until_withdrawals_allowed: 0,
+    withdrawals_allowed: false,
+    deposit_delay: 0,
+    blocks_passed: 0,
     staked_eth: 0,
     account_eth: 0
   });
@@ -248,20 +246,30 @@ export const use_account = (runtime: Pick<Runtime, 'queries'|'task'|'ethereum'|'
       return resolve();
     }
     const { contracts: { RocketStake } } = hardhat;
-    const { contracts: { RocketTokenRETH } } = hardhat;
     const rocket_stake = new ethers.Contract(RocketStake.address, RocketStake.abi, ethereum.signer);
-    const rocket_token_eth = new ethers.Contract(RocketTokenRETH.address, RocketTokenRETH.abi, ethereum.signer);
     const staked_eth = await rocket_stake.accountStakedETH(ethereum.connected_address);
-    const staked_reth = await rocket_stake.accountStakedRETH(ethereum.connected_address);
-    const _total_reth = await rocket_token_eth.balanceOf(RocketStake.address);
+    const [
+      _last_deposit_block, 
+      _block_number, 
+      _deposit_delay
+    ] = await rocket_stake.accountDepositDelay(ethereum.connected_address);
+    const total_reth_held = await rocket_stake.totalRETHHeld();
+    const blocks_until_withdrawals_allowed = Math.max(
+      0,
+      _deposit_delay.toNumber() - (_block_number.toNumber() - _last_deposit_block.toNumber())
+    );
+    const withdrawals_allowed = blocks_until_withdrawals_allowed === 0;
     const account_eth = await ethereum.web3.getBalance(ethereum.connected_address);
     const display_staked_eth = Number((Number(ethers.utils.formatUnits(staked_eth, 18))).toFixed(7));
     setStaker({
-      staked_reth: Number(Number(ethers.utils.formatUnits(staked_reth, 18)).toFixed(7)),
+      blocks_until_withdrawals_allowed,
+      withdrawals_allowed,
+      deposit_delay: _deposit_delay.toNumber(),
+      blocks_passed: _block_number.toNumber() - _last_deposit_block.toNumber(),
       staked_eth: display_staked_eth,
       account_eth: Number(Number(ethers.utils.formatUnits(account_eth, 18)).toFixed(7))
     });
-    setTotalRETH(Number(Number(ethers.utils.formatUnits(_total_reth, 18)).toFixed(7)));
+    setTotalRETH(Number(Number(ethers.utils.formatUnits(total_reth_held, 18)).toFixed(7)));
     resolve();
   } catch (err) { reject(err) }});
   const reload = async () => {
@@ -273,7 +281,12 @@ export const use_account = (runtime: Pick<Runtime, 'queries'|'task'|'ethereum'|'
     if (ethereum.connected_address) {
       reload();
     }
-  }, [hardhat, ethereum.connected_network.expects, ethereum.connected_address, ethereum.connection_loading]);
+  }, [
+    hardhat, 
+    ethereum.connected_network.expects, 
+    ethereum.connected_address, 
+    ethereum.connection_loading
+  ]);
   return {
     loading,
     reload,

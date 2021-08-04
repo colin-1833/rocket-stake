@@ -51,45 +51,18 @@ const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, 
   queries.remove('pending_tx_success');
   ethereum.add_pending_transaction({ tx, method });
   task.set('', []);
-  setTimeout(async () => {
-    try {
-      await tx.wait(1);
-      await account.reload();
-      const confirmed_tx = await tx.wait(ethereum.connected_network.expects === 'local' ? 1 : 3);
-      await account.reload();
-      resolve(confirmed_tx.transactionHash);
-    } catch(err) {
-      reject(err);
-    } finally {
-      ethereum.remove_pending_transaction(tx.hash);
-    }
-  }, ethereum.connected_network.expects === 'local' ? 5000 : 1);
+  try {
+    await tx.wait(1);
+    await account.reload();
+    const confirmed_tx = await tx.wait(2);
+    await account.reload();
+    resolve(confirmed_tx.transactionHash);
+  } catch(err) {
+    reject(err);
+  } finally {
+    ethereum.remove_pending_transaction(tx.hash);
+  }
 } catch (err) { reject(err) }});
-
-export const distribute_rewards = async (params: {
-  eth: number,
-  runtime: Runtime
-}) => {
-  const {
-    runtime,
-    eth
-  } = params;
-  await apply_lifecycles(
-    runtime,
-    () => new Promise(async (resolve, reject) => { try {
-      const eth_as_big_number = ethers.utils.parseEther(String(eth));
-      if (!runtime.validators.is_valid_deposit_reward(eth_as_big_number)) {
-        runtime.toast.error('Invalid ETH amount supplied.')
-        return reject();
-      }
-      const success_message = 'Successfully deposited rewards!';
-      runtime.queries.add('pending_tx_success_message', success_message);
-      await main_contract_call(runtime, 'distributeRewards', [], { value: eth_as_big_number });
-      runtime.toast.success(success_message);
-      resolve();
-    } catch (err) { reject(err) }})
-  )
-};
 
 export const withdraw_stake = async (params: {
   stake_to_withdraw: number,

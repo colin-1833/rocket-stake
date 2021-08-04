@@ -14,38 +14,20 @@ import { ethers, ContractReceipt } from 'ethers';
 
 const map_subdomain_to_network = (): NetworkName => {
   const subdomain = window.location.host.split('.')[0];
-  if (
-    subdomain === 'kovan'
-    || subdomain === 'ropsten'
-    || subdomain === 'rinkeby'
-    || subdomain === 'goerli'
-  ) {
-    return subdomain;
-  }
   if (subdomain === 'www' || subdomain === 'mainnet') {
     return 'mainnet';
   }
-  if (window.location.host.startsWith('localhost')) {
-    return 'local';
-  }
-  if (window.location.host.split('.').length === 2) {
-    return 'mainnet';
-  }
-  return 'local';
+  return 'goerli';
 };
 
 const map_chain_id = (chain_id: any) => {
   if (!!Number(chain_id) && chain_id.length > 9) {
-    return 'local';
+    return 'goerli';
   }
   switch (chain_id) {
     case '1' : return 'mainnet';
-    case '3' : return 'ropsten';
-    case '4' : return 'rinkeby';
     case '5' : return 'goerli';
-    case '42': return 'kovan';
-    case '1337': return 'local';
-    default  : return `local`; // i'm not sure if this is the best way to handle this???
+    default  : return `goerli`; // i'm not sure if this is the best way to handle this???
   }
 };
 
@@ -60,14 +42,14 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
   const [connection_loading, setConnectionLoading] = useState(true);
   const [page_loading, setPageLoading] = useState(true);
   const [connected_chain_id, setConnectedChainId] = useState('');
-  const [connected_network_name, setConnectedNetworkName] = useState<NetworkName>('local');
-  const { color } = (constants.networks[connected_chain_id] || constants.networks['1337']);
+  const [connected_network_name, setConnectedNetworkName] = useState<NetworkName>('goerli');
+  const { color } = (constants.networks[connected_chain_id] || constants.networks['5']);
   const clear_data = async () => {
     setWeb3(null);
     setSigner(null);
     setConnectedAddress('');
     setConnectedChainId('');
-    setConnectedNetworkName('local');
+    setConnectedNetworkName('goerli');
   };
   const dry_connect_metamask = async () => {
     const web3 = new ethers.providers.Web3Provider(window.ethereum, 'any');
@@ -112,12 +94,17 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
     if (_web3) {
       const receipt: ContractReceipt = await _web3.getTransactionReceipt(queries.params.pending_tx);
       if (receipt && receipt.blockNumber) {
-        queries.add('pending_tx_success', 'true');
         if (queries.params.pending_tx_success_message) {
           toast.success(queries.params.pending_tx_success_message);
-          queries.remove('pending_tx_success_message');
           func();
         }
+        queries.remove('successful_tx');
+        queries.add('successful_tx', queries.params.pending_tx);
+        queries.add('successful_tx_method', queries.params.pending_tx_method);
+        queries.remove('pending_tx');
+        queries.remove('pending_tx_method');
+        queries.remove('pending_tx_success_message');
+        queries.remove('pending_tx_success');
       }
     }
   };
@@ -141,6 +128,8 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
   }, []);
   useEffect(() => {
     if (pending_transactions.length > 0) {
+      queries.remove('successful_tx');
+      queries.remove('successful_tx_method');
       queries.add(
         'pending_tx',
         pending_transactions.slice().reverse()[0].tx.hash

@@ -120,20 +120,13 @@ const TotalRETHLocked = (props: { height: number }) => {
     ethereum
   } = runtime;
   return(
-    <div onClick={() => {
-      window.open(
-        get_etherscan_base(runtime) 
-          + `/token/${config.rETH_address[ethereum.connected_network.name]}?a=${config.rocket_stake_address[ethereum.connected_network.name]}`, 
-        '_blank'
-      );
-    }} style={{
+    <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       borderRadius: 5,
       height: props.height,
       backgroundColor: constants.colors.card,
       boxShadow: '0 3px 3px rgba(0,0,0,0.2)',
-      overflow: 'hidden',
-      cursor: 'pointer'
+      overflow: 'hidden'
     }}>
       <div style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
@@ -336,12 +329,6 @@ const Settings = (props: { height: number }) => {
             selected={false}
             title={'Rocket Pool Docs'}
             on_click={() => window.open(`https://docs.rocketpool.net/guides/staking/overview.html#how-rocket-pool-works`, '_blank')}/>
-          {config.enable_reward_deposits ? (
-            <SettingsOption
-              selected={task.action === 'distribute_rewards'}
-              title={'Distribute Rewards'}
-              on_click={() => task.set('distribute_rewards', [])}/>
-          ) : null}
         </div>
       ) : null}
       <div style={{
@@ -474,15 +461,8 @@ const Toolbar = () => {
         {!config.github_url ? null : (
           <>
             <Github height={height} />
-            <div style={{
-              display: 'flex',
-              width: 15
-            }}>
-              <div />
-            </div>
           </>
         )}
-        <Settings height={height}/>
       </div>
     </div>
   )

@@ -4,15 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "deploy-client": "",
     "deploy-goerli": "rm -rf ./cache ./deployments/goerli ./artifacts && npx hardhat deploy --network goerli --export ../client/src/deployments/goerli.json",
-    "deploy-ropsten": "rm -rf ./cache ./deployments/ropsten ./artifacts && npx hardhat deploy --network ropsten --export ../client/src/deployments/ropsten.json",
-    "deploy-rinkeby": "rm -rf ./cache ./deployments/rinkeby ./artifacts && npx hardhat deploy --network rinkeby --export ../client/src/deployments/rinkeby.json",
-    "deploy-mainnet": "rm -rf ./cache ./artifacts && npx hardhat deploy --network mainnet --export ../client/src/deployments/mainnet.json",
-    "deploy-kovan": "rm -rf ./cache ./artifacts ./deployments/kovan && npx hardhat deploy --network kovan --export ../client/src/deployments/kovan.json",
-    "start": "rm -rf ./cache ./artifacts && npx hardhat deploy --reset && npx hardhat node --show-accounts --export ../client/src/deployments/local.json",
-    "size": "npx hardhat deploy && npx hardhat size-contracts",
-    "test": "npx hardhat test test/flash-loans.ts && npx hardhat test test/storage-key-management.ts && npx hardhat test test/staking-reth-collateral-limits.ts && npx hardhat test test/withdrawal-rules.ts"
+    "deploy-mainnet": "rm -rf ./cache ./artifacts && npx hardhat deploy --network mainnet --export ../client/src/deployments/mainnet.json"
   },
   "devDependencies": {
     "@nomiclabs/buidler": "^1.4.8",

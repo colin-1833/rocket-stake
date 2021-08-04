@@ -13,8 +13,6 @@ export const use_router = (options: Pick<Runtime, 'task'>) => {
       return ConfirmWithdrawal;
     case 'increase_stake':
       return IncreaseStake;
-    case 'distribute_rewards':
-      return DistributeRewards;
     case 'loading':
       return Loading;
     default:
@@ -60,90 +58,6 @@ const Card = (props: { children: React.ReactNode, on_close: Function, style?: an
           }} src={CloseIcon} alt="logo" />
         </div>
         {props.children}
-      </div>
-    </div>
-  );
-};
-
-export const DistributeRewards = (props: { pending_tx: React.ReactNode }) => {
-  const runtime = use_runtime();
-  const {
-    task,
-    constants
-  } = runtime;
-  const [rewards_to_deposit, setRewardsToDeposit] = useState('0');
-  const valid_number = isNaN(Number(rewards_to_deposit)) ? 0 : Number(rewards_to_deposit);
-  return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      width: '100%',
-      height: '100%'
-    }}>
-      <div style={{
-        display: 'flex', flexDirection: 'column',
-      }}>
-        <Card style={{
-          width: 500
-        }} on_close={() => task.set('', [])}>
-          <>
-            <div style={{
-              display: 'flex', flexDirection: 'column',
-              width: '100%'
-            }}>
-              <form onSubmit={e => { e.preventDefault(); }} style={{
-                margin: 0,
-                padding: 0,
-                display: 'flex', flexDirection: 'column',
-                marginBottom: 15
-              }}>
-                <label style={{
-                  lineHeight: 1.4,
-                  margin: 0,
-                  padding: 0,
-                  paddingRight: 60,
-                  color: 'rgba(0, 0, 0, .6)',
-                  fontSize: 14,
-                  marginBottom: 15
-                }} htmlFor="distribute_rewards">Specify the amount of ETH rewards to deposit, enabling rETH growth: </label>
-                <input value={rewards_to_deposit} onChange={e => setRewardsToDeposit(e.target.value)} style={{
-                  margin: 0,
-                  padding: 10,
-                  borderWidth: 0,
-                  borderRadius: 5,
-                  color: 'rgba(0, 0, 0, .65)',
-                  backgroundColor: 'white',
-                  fontSize: 16
-                }} type="text" name="owner" id="owner" />
-              </form>
-            </div>
-            <div onClick={() => CONTAINER.distribute_rewards({
-              eth: valid_number,
-              runtime
-            })} style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              width: '100%',
-              height: 40,
-              backgroundColor: constants.colors.button,
-              borderRadius: 4,
-              cursor: 'pointer',
-              boxShadow: '0 3px 3px rgba(0,0,0,0.1)'
-            }}>
-              <h3
-                style={{
-                  margin: 0,
-                  padding: 0,
-                  color: 'white',
-                  fontSize: 15,
-                  fontFamily: 'arial'
-                }}>
-                Distribute Rewards
-              </h3>
-            </div>
-          </>
-        </Card>
-        <div style={{ display: 'flex', width: 500 }}>
-          {props.pending_tx}
-        </div>
       </div>
     </div>
   );
@@ -366,7 +280,7 @@ export const DefaultTask = (props: any) => {
     task,
     account
   } = runtime;
-  const width = 500;
+  const width = account.staker.withdrawals_allowed ? 520 : 700;
   const height = 165;
   const button_section_height = 70;
   return (
@@ -487,27 +401,52 @@ export const DefaultTask = (props: any) => {
                   Increase Stake
                 </h3>
               </div>
-              <div onClick={() => task.set('confirm_withdrawal', [])} style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                width: (width - 40) / 2,
-                height: button_section_height - 30,
-                marginLeft: 15,
-                backgroundColor: constants.colors.button,
-                borderRadius: 4,
-                cursor: 'pointer',
-                boxShadow: '0 3px 3px rgba(0,0,0,0.1)'
-              }}>
-                <h3
-                  style={{
-                    margin: 0,
-                    padding: 0,
-                    color: 'white',
-                    fontSize: 15,
-                    fontFamily: 'arial'
-                  }}>
-                  Withdraw
-                </h3>
-              </div>
+              {account.staker.withdrawals_allowed ? (
+                <div onClick={() => task.set('confirm_withdrawal', [])} style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  width: (width - 40) / 2,
+                  height: button_section_height - 30,
+                  marginLeft: 15,
+                  backgroundColor: constants.colors.button,
+                  borderRadius: 4,
+                  cursor: 'pointer',
+                  boxShadow: '0 3px 3px rgba(0,0,0,0.1)'
+                }}>
+                  <h3
+                    style={{
+                      margin: 0,
+                      padding: 0,
+                      color: 'white',
+                      fontSize: 15,
+                      fontFamily: 'arial'
+                    }}>
+                    Withdraw
+                  </h3>
+                </div>
+              ) : (
+                <div style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  width: (width - 40) / 2,
+                  height: button_section_height - 30,
+                  marginLeft: 15,
+                  backgroundColor: 'rgba(180, 180, 180, 1)',
+                  borderRadius: 4,
+                  cursor: 'not-allowed',
+                  boxShadow: '0 3px 3px rgba(0,0,0,0.1)'
+                }}>
+                  <h3
+                    style={{
+                      margin: 0,
+                      padding: 0,
+                      color: 'rgba(0, 0, 0, .6)',
+                      fontSize: 13,
+                      fontFamily: 'arial'
+                    }}>
+                    Withdrawals Allowed in: {account.staker.blocks_until_withdrawals_allowed} Blocks
+                  </h3>
+                </div>
+              )}
+              
             </div>
           </div>
         </div>

@@ -2,7 +2,11 @@
 
 # About
 
-A solidity smart contract and react frontend to generate passive income through exposure to rETH, [Rocket Pool's](https://rocketpool.net) liquid staking token, and flash loan fees.
+A solidity smart contract and react frontend that provides access to non-custodian decentralized staking for ETH holders.
+
+# Try it on Prater:
+
+https://goerli.rocketstake.org 
 
 # Motivation 
 
@@ -10,15 +14,19 @@ The staking community has expressed concerns about the tax implications of direc
 
 # RocketStake's Solution 
 
-RocketStake's web frontend allows ETH holders to "lend" their ETH to RocketStake via MetaMask. Behind the scenes RocketStake converts your lent ETH into rETH and puts it to use by exposing it to flash loan traders. Fees accumulated from flash loan trades are redistributed to the ETH lenders. Theoretically, lending ETH to RocketStake could provide better returns than investing in rETH directly. However, if you aren't comfortable auditing RocketStake's contract yourself we encourage you to invest directly in rETH instead. **Rocket Pool has undergone several audits while RocketStake has not.**
-
-# Can I Withdraw Whenever I Want?
-
-Withdrawals from RocketStake are capped by the amount of available ETH in the [Rocket Pool's rETH token contract](https://github.com/rocket-pool/rocketpool/blob/master/contracts/contract/token/RocketTokenRETH.sol). This means that it could be hard to withdraw from RocketStake before withdrawals are enabled on ETH 2.0. If you are not familiar with ETH 2.0, please read up on the [Ethereum Foundation's ETH 2.0 learning materials](https://ethereum.org/en/eth2/).
+RocketStake's web frontend allows ETH holders to "lend" their ETH to RocketStake via MetaMask. Behind the scenes RocketStake converts ETH into rETH. Lenders cannot withdraw rETH directly from the contract, only ETH.
 
 # What is Rocket Pool and rETH?
 
-Rocket Pool is a network of smart contracts that incentive decentralized staking on the ETH 2.0 network. Learn more about Rocket Pool by going to their [site](https://rocketpool.net) or interacting with their discord community (one of the best in the crypto space). Their contracts are slated to deploy on Prater (Goerli) and then Mainnet sometime in late 2021. [Read more about how Rocket Pool works](https://docs.rocketpool.net/guides/staking/overview.html#how-rocket-pool-works).
+Rocket Pool is a network of smart contracts that incentive decentralized staking on the ETH 2.0 network. Learn more about Rocket Pool by going to [their site](https://rocketpool.net) or interacting with their discord community (one of the best in the crypto space). Their contracts are slated to deploy on Mainnet sometime in late 2021. [Read more about how Rocket Pool works](https://docs.rocketpool.net/guides/staking/overview.html#how-rocket-pool-works).
+
+# Does the official Rocket Pool team endorse RocketStake?
+
+No. Yay for permissionless finance.
+
+# Can I Withdraw Whenever I Want?
+
+Currently, on goerli, RocketStake cannot do anything with newly minted [rETH for 24 hours](https://github.com/rocket-pool/rocketpool/blob/3d6df4c87401f303f6acbdd249bdcb182e8827f3/contracts/contract/token/RocketTokenRETH.sol#L157). This means you will not be able to withdraw ETH from RocketStake for 24 hours after adding to your current  stake. Additionally, withdrawals from RocketStake are capped by the amount of available ETH in the [Rocket Pool's rETH token contract](https://github.com/rocket-pool/rocketpool/blob/master/contracts/contract/token/RocketTokenRETH.sol). This means that it could be hard to withdraw from RocketStake before withdrawals are enabled on ETH 2.0. If you are not familiar with ETH 2.0, please read up on the [Ethereum Foundation's ETH 2.0 learning materials](https://ethereum.org/en/eth2/).
 
 # Tax Disclaimer
 
@@ -26,14 +34,4 @@ It is possible that many countries will consider a RocketStake swap "on your beh
 
 # Can this contract be changed?
 
-No. If a new version is released stakers will need to manually withdraw funds and move to the new contract.
-
-# How does RocketStake make a profit?
-
-RocketStake only profits if their is significant flash loan activity, as it takes a percent of all flash loan fees, currently set to 50%. This percent will be reduced as RocketStake grows and competition comes online.
-
-# Testnet Demos:
-
-* https://kovan.rocketstake.org
-* https://ropsten.rocketstake.org
-* https://rinkeby.rocketstake.org
+No. A staker can, individually and voluntarily, move their staked ETH to a new contract that is more useful than RocketStake, but nothing is forced upon RocketStake users.

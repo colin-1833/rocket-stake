@@ -19,25 +19,9 @@ export const networks: { [key: string]: { color: string, name: NetworkName } } =
     name: 'mainnet',
     color: 'rgb(42, 173, 165)'
   },
-  '3': {
-    name: 'ropsten',
-    color: 'rgb(253, 66, 129)'
-  },
-  '4': {
-    name: 'rinkeby',
-    color: 'rgb(244, 185, 72)'
-  },
-  '42': {
-    name: 'kovan',
-    color: 'rgb(131, 95, 249)'
-  },
   '5': {
     name: 'goerli',
     color: 'rgb(43, 145, 236)'
-  },
-  '1337': {
-    name: 'local',
-    color: 'rgb(100, 100, 100)'
   }
 };
 

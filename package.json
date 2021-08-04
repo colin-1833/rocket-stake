@@ -6,18 +6,11 @@
     "dev-hardhat": "cd hardhat && yarn start",
     "dev-client": "cd client && yarn start",
 
-    "deploy-sites": "cd client && yarn build && surge build www.rocketstake.org && surge build rocketstake.org && surge build goerli.rocketstake.org && surge build rinkeby.rocketstake.org && surge build ropsten.rocketstake.org && surge build kovan.rocketstake.org",
     "deploy-site-mainnet": "cd client && yarn build && surge build www.rocketstake.org && surge build rocketstake.org",
     "deploy-site-goerli": "cd client && yarn build && surge build goerli.rocketstake.org",
-    "deploy-site-ropsten": "cd client && yarn build && surge build ropsten.rocketstake.org",
-    "deploy-site-rinkeby": "cd client && yarn build && surge build rinkeby.rocketstake.org",
-    "deploy-site-kovan": "cd client && yarn build && surge build kovan.rocketstake.org",
     
     "deploy-contract-mainnet": "cd hardhat && yarn deploy-mainnet",
     "deploy-contract-goerli": "cd hardhat && yarn deploy-goerli",
-    "deploy-contract-ropsten": "cd hardhat && yarn deploy-ropsten",
-    "deploy-contract-rinkeby": "cd hardhat && yarn deploy-rinkeby",
-    "deploy-contract-kovan": "cd hardhat && yarn deploy-kovan",
     
     "size": "cd hardhat && yarn size",
     "test": "cd hardhat && yarn test",

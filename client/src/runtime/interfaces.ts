@@ -1,7 +1,7 @@
 import * as constants from './constants/index';
 import { BigNumber, ContractTransaction } from 'ethers';
 
-export type NetworkName = 'ropsten'|'rinkeby'|'mainnet'|'goerli'|'kovan'|'local';
+export type NetworkName = 'mainnet'|'goerli';
 
 export interface Network {
   name: NetworkName,
@@ -32,7 +32,7 @@ export interface Ethereum {
   page_loading: boolean
 };
 
-export type TaskAction = 'loading'|'distribute_rewards'|'claim_income'|'confirm_withdrawal'|'increase_stake'|''|undefined
+export type TaskAction = 'loading'|'claim_income'|'confirm_withdrawal'|'increase_stake'|''|undefined
 
 export interface RethCollateral {
   loading: boolean,
@@ -41,7 +41,10 @@ export interface RethCollateral {
 }
 
 export interface Staker {
-  staked_reth: number,
+  blocks_until_withdrawals_allowed: number,
+  withdrawals_allowed: boolean,
+  deposit_delay: number,
+  blocks_passed: number,
   staked_eth: number,
   account_eth: number
 };
