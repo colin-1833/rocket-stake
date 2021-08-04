@@ -133,6 +133,20 @@ const NotDeployedYet = () => {
   )
 };
 
+const TryDiffNetwork = () => {
+  const {
+    dimensions,
+    settings,
+    ethereum
+  } = use_runtime();
+  return(
+    <Wrapper 
+      dimensions={dimensions} 
+      on_click={() => settings.set(false)} 
+      message={'You must connect to the following network: ' + ethereum.connected_network.expects}/>
+  )
+};
+
 function App(props: { dimensions: Dimensions }) {
   const runtime = use_runtime();
   if (!runtime) {
@@ -142,7 +156,10 @@ function App(props: { dimensions: Dimensions }) {
   if (ethereum.page_loading) {
     return <Loading />;
   }
-  if (!ethereum.connection_loading && !ethereum.connected_network.deployed) {
+  if (!ethereum.connection_loading && ethereum.connected_network.name !== ethereum.connected_network.expects) {
+    return <TryDiffNetwork />;
+  }
+  if (!ethereum.connection_loading && !ethereum.connected_network.name) {
     return <NotDeployedYet />;
   }
   return (

@@ -1,7 +1,7 @@
 import * as constants from './constants/index';
 import { BigNumber, ContractTransaction } from 'ethers';
 
-export type NetworkName = 'mainnet'|'goerli';
+export type NetworkName = 'ropsten'|'rinkeby'|'mainnet'|'goerli'|'kovan'|'local';
 
 export interface Network {
   name: NetworkName,

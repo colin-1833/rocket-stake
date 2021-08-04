@@ -14,20 +14,38 @@ import { ethers, ContractReceipt } from 'ethers';
 
 const map_subdomain_to_network = (): NetworkName => {
   const subdomain = window.location.host.split('.')[0];
+  if (
+    subdomain === 'kovan'
+    || subdomain === 'ropsten'
+    || subdomain === 'rinkeby'
+    || subdomain === 'goerli'
+  ) {
+    return subdomain;
+  }
   if (subdomain === 'www' || subdomain === 'mainnet') {
     return 'mainnet';
   }
-  return 'goerli';
+  if (window.location.host.startsWith('localhost')) {
+    return 'local';
+  }
+  if (window.location.host.split('.').length === 2) {
+    return 'mainnet';
+  }
+  return 'local';
 };
 
 const map_chain_id = (chain_id: any) => {
   if (!!Number(chain_id) && chain_id.length > 9) {
-    return 'goerli';
+    return 'local';
   }
   switch (chain_id) {
     case '1' : return 'mainnet';
+    case '3' : return 'ropsten';
+    case '4' : return 'rinkeby';
     case '5' : return 'goerli';
-    default  : return `goerli`; // i'm not sure if this is the best way to handle this???
+    case '42': return 'kovan';
+    case '1337': return 'local';
+    default  : return `local`; // i'm not sure if this is the best way to handle this???
   }
 };
 
@@ -113,14 +131,6 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
       return () => clearInterval(interval);
     }
   }, [queries.params.pending_tx]);
-  useEffect(() => {
-    if (String(queries.params.pending_tx_success) === 'true') {
-      queries.remove('pending_tx');
-      queries.remove('pending_tx_method');
-      queries.remove('pending_tx_success_message');
-      queries.remove('pending_tx_success');
-    }
-  }, []);
   useEffect(() => {
     if (pending_transactions.length > 0) {
       queries.remove('successful_tx');

@@ -1,9 +1,17 @@
 import goerli from './goerli.json';
+import kovan from './kovan.json';
+import ropsten from './ropsten.json';
+import rinkeby from './rinkeby.json';
 import mainnet from './mainnet.json';
+import local from './local.json';
 
 export const networks = {
   goerli,
-  mainnet
+  kovan,
+  ropsten,
+  mainnet,
+  rinkeby,
+  local
 };
 
 export const deployed = Object.entries(networks)
