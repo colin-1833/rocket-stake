@@ -10,11 +10,11 @@ https://goerli.rocketstake.org
 
 # Tax Disclaimer
 
-It is possible that many countries will consider a RocketStake swap "on your behalf" to be taxable the same way it would be if you made the swap directly yourself. You will need to consult a tax professional to better guage the risk of different tax strategies.
+It is possible that many countries will consider a RocketStake swap from ETH to rETH "on your behalf" to be taxable the same way it would be if you made the swap directly yourself. You will need to consult a tax professional to better guage the risk of different tax strategies.
 
 # RocketStake's Solution 
 
-RocketStake's web frontend allows ETH holders "stake" their ETH with RocketStake via MetaMask. Behind the scenes RocketStake converts ETH into rETH. Lenders cannot withdraw rETH directly from the contract, only ETH. This contract ensures rETH will not touch your personal wallet.
+RocketStake's web frontend allows ETH holders to "stake" their ETH with RocketStake via MetaMask. Behind the scenes RocketStake converts ETH into rETH. Stakers cannot withdraw rETH directly from the contract, only ETH. This contract ensures rETH will not touch your personal wallet.
 
 # Does RocketStake take a percentage of staking rewards?
 
