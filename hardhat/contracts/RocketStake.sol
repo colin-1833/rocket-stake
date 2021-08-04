@@ -29,11 +29,16 @@ contract RETHBuyer {
     function burn(uint256 reth_amount) external onlyOwner returns(uint256 _eth_received) {
         require(reth_amount > 0, "You must burn a non zero positive amount of reth");
 
+        // setup RP
         IRocketStorage rocket_storage = IRocketStorage(rocket_storage_address);
         IRocketTokenRETH rocket_token_reth = IRocketTokenRETH(rocket_storage.getAddress(keccak256(abi.encodePacked("contract.address", "rocketTokenRETH"))));
+
+        // burn the reth specified and record this contract's balance change
         uint256 starting_balance = address(this).balance;
         rocket_token_reth.burn(reth_amount);
         uint256 eth_received = address(this).balance.sub(starting_balance);
+
+        // send the owner of this contract the eth received from rocket pool and return
         payable(owner).transfer(eth_received);
         return eth_received;
     } 
@@ -41,15 +46,18 @@ contract RETHBuyer {
     function deposit() payable external onlyOwner returns(uint256 _reth_added_to_stake) {
         require(msg.value > 0, "Must deposit a non-zero amount of ETH");
 
-        // interact with rocket pool to deposit msg.value and return the amount of reth minted
+        // setup RP
         IRocketStorage rocket_storage = IRocketStorage(rocket_storage_address);
         IRocketDepositPool rocket_deposit_pool = IRocketDepositPool(rocket_storage.getAddress(keccak256(abi.encodePacked("contract.address", "rocketDepositPool"))));
         IRocketTokenRETH rocket_token_reth = IRocketTokenRETH(rocket_storage.getAddress(keccak256(abi.encodePacked("contract.address", "rocketTokenRETH"))));
-        uint256 reth_supply_before = rocket_token_reth.totalSupply();
+
+        // deposit msg.value into rocket pool and record the change in our rETH balance as a result
+        uint256 reth_supply_before = rocket_token_reth.balanceOf(address(this));
         rocket_deposit_pool.deposit{ value: msg.value }();
-        uint256 reth_supply_after = rocket_token_reth.totalSupply();
-        uint256 reth_added_to_stake = reth_supply_after.sub(reth_supply_before);
-        return reth_added_to_stake;
+        uint256 reth_supply_after = rocket_token_reth.balanceOf(address(this));
+
+        // return the change in total rETH held by this contract
+        return reth_supply_after.sub(reth_supply_before);
     }
 
     function lastDepositBlock() external view returns(uint256 _last_deposit_block) {
@@ -79,7 +87,7 @@ contract RocketStake is IRocketStake {
 
     modifier safeWithdrawal(uint256 eth_amount, address staker) {
         require(eth_amount > 0, "You must withdraw more than 0 ETH");
-        require(stakers[staker].exists == true, "Nothing staked here.");
+        require(stakers[staker].exists == true, "Staker not registered yet.");
         require(stakers[staker].staked_reth > 0, "Nothing staked here.");
         require(depositCooldownPassed(staker) == true, "Rocket Pool will not let you move or withdraw your rETH yet.");
         _;
@@ -105,7 +113,7 @@ contract RocketStake is IRocketStake {
 
         // have the reth_buyer deposit eth for rETH and hold on to it
         // this value will never equal zero because Rocket Pool reverts when depositing an amount below their set minimum
-        // this contract relies on the ui/client to ensure stakers don't stake too little
+        // this contract relies on the ui/client to ensure stakers don't trigger such a revert
         uint256 reth_added_to_stake = stakers[msg.sender].reth_buyer.deposit{ value: msg.value }();
 
         // update balances
@@ -196,17 +204,18 @@ contract RocketStake is IRocketStake {
         // setup RP contracts
         IRocketStorage rocket_storage = IRocketStorage(rocket_storage_address);
         IRocketTokenRETH rocket_token_reth = IRocketTokenRETH(rocket_storage.getAddress(keccak256(abi.encodePacked("contract.address", "rocketTokenRETH"))));
+        
         // make sure we're not trying to withdraw more ETH than our rETH share is worth
         uint256 eth_able_to_be_withdrawn = rocket_token_reth.getEthValue(stakers[staker].staked_reth);
         require(eth_amount <= eth_able_to_be_withdrawn, "You cannot withdraw more ETH than you have staked.");
 
-        // tell the buyer contract to burn some of its rETH and send the ETH proceeds back to this contract
+        // determine how much reth the supplied eth_amount translates to
         uint256 reth_to_burn = rocket_token_reth.getRethValue(eth_amount);
 
-        // have the buyer contract burn the reth, where it sends ETH back to this contract
+        // tell the buyer contract to burn some of its rETH and send the ETH proceeds back to this contract
         uint256 eth_received = stakers[staker].reth_buyer.burn(reth_to_burn);
 
-        // add a check in the odd case where rocket pool is not crediting the reth buyer with ETH after burning rETH
+        // add a check in the odd case where rocket pool is not crediting the reth buyer sends no ETH back
         require(eth_received > 0, "No ETH was received from the rETH burn");
 
         // update balances
