@@ -88,7 +88,7 @@ contract RocketStake is IRocketStake {
             emit Register(msg.sender);
         }
 
-        // have the buyer deposit eth for rETH and hold on to it
+        // have the reth_buyer deposit eth for rETH and hold on to it
         uint256 reth_added_to_stake = stakers[msg.sender].reth_buyer.deposit{ value: msg.value }();
 
         // update balances
@@ -131,6 +131,7 @@ contract RocketStake is IRocketStake {
     ) override public {
         // make sure there is a stake to migrate and 
         // that we aren't migrating into a non-existant address
+        require(eth_amount > 0, "You must migrate some ETH");
         require(stakers[msg.sender].staked_reth > 0, "You are not staking any ETH");
         require(next_contract_address != address(0), "Cannot migrate to non-existant contract");
         require(depositCooldownPassed(msg.sender) == true, "Rocket Pool will not let you move or withdraw your rETH yet.");
@@ -152,7 +153,7 @@ contract RocketStake is IRocketStake {
         uint256 eth_received = stakers[msg.sender].reth_buyer.burn(reth_to_burn);
         stakers[msg.sender].staked_reth = stakers[msg.sender].staked_reth.sub(reth_to_burn);
 
-        // go through the transfer protocol, caller better know they can trust the contract their migrating to
+        // go through the transfer protocol, caller better know they can trust the contract they're migrating to
         IMigrationCompatible(next_contract_address).startTransfer(eth_received, msg.sender);
         payable(msg.sender).transfer(eth_received);
         IMigrationCompatible(next_contract_address).closeTransfer(eth_received, msg.sender);

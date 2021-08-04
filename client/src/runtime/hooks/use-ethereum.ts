@@ -95,21 +95,16 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
       const receipt: ContractReceipt = await _web3.getTransactionReceipt(queries.params.pending_tx);
       if (receipt && receipt.blockNumber) {
         if (queries.params.pending_tx_success_message) {
-          toast.success(queries.params.pending_tx_success_message);
-          func();
+          window.location.href = window.location.origin + window.location.pathname 
+            + '?successful_tx=' + queries.params.pending_tx 
+            + '&successful_tx_method=' + queries.params.pending_tx_method
+            + '&success_message=' + queries.params.pending_tx_success_message
         }
-        queries.remove('successful_tx');
-        queries.add('successful_tx', queries.params.pending_tx);
-        queries.add('successful_tx_method', queries.params.pending_tx_method);
-        queries.remove('pending_tx');
-        queries.remove('pending_tx_method');
-        queries.remove('pending_tx_success_message');
-        queries.remove('pending_tx_success');
       }
     }
   };
   useEffect(() => {
-    if (queries.params.pending_tx && String(queries.params.pending_tx_success) !== 'true') {
+    if (queries.params.pending_tx) {
       let interval = setInterval(() => {
         if (String(queries.params.pending_tx_success) !== 'true') {
           remove_non_pending_transaction_queries(() => clearInterval(interval));

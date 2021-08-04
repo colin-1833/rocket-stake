@@ -3,7 +3,7 @@
   "chainId": "5",
   "contracts": {
     "RocketStake": {
-      "address": "0xfb5678Fb1C3DEdd390BdBD992f16F582C75b54c0",
+      "address": "0x1978B6f45b650C2B28d912Cc67B537E0Fb3BD22e",
       "abi": [
         {
           "inputs": [
@@ -84,19 +84,6 @@
           ],
           "name": "Register",
           "type": "event"
-        },
-        {
-          "inputs": [],
-          "name": "FLASH_LOAN_CALLBACK_SUCCESS",
-          "outputs": [
-            {
-              "internalType": "bytes32",
-              "name": "",
-              "type": "bytes32"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
         },
         {
           "inputs": [
