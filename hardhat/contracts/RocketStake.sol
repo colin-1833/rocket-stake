@@ -114,7 +114,7 @@ contract RocketStake is IRocketStake {
         uint256 eth_able_to_be_withdrawn = rocket_token_reth.getEthValue(stakers[msg.sender].staked_reth);
         require(eth_amount <= eth_able_to_be_withdrawn, "You cannot withdraw more ETH than you have staked.");
 
-        // transfer the reth to burn to the buyer contract, run the burn function, and deduct the total burnt
+        // tell the buyer contract to burn some of its rETH and send the ETH proceeds back to this contract
         uint256 reth_to_burn = rocket_token_reth.getRethValue(eth_amount);
         total_reth_held = total_reth_held.sub(reth_to_burn);
         uint256 eth_received = stakers[msg.sender].reth_buyer.burn(reth_to_burn);
@@ -147,7 +147,7 @@ contract RocketStake is IRocketStake {
         uint256 eth_able_to_be_withdrawn = rocket_token_reth.getEthValue(stakers[msg.sender].staked_reth);
         require(eth_amount <= eth_able_to_be_withdrawn, "You cannot migrate that much.");
 
-        // transfer the reth to burn to the buyer contract, run the burn function, and deduct the total burnt
+        // tell the buyer contract to burn some of its rETH and send the ETH proceeds back to this contract
         uint256 reth_to_burn = rocket_token_reth.getRethValue(eth_amount);
         total_reth_held = total_reth_held.sub(reth_to_burn);
         uint256 eth_received = stakers[msg.sender].reth_buyer.burn(reth_to_burn);
