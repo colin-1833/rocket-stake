@@ -2,7 +2,7 @@
 
 # About
 
-A solidity smart contract and react frontend that provides access to non-custodial decentralized staking on Ethereum.
+A solidity smart contract and react frontend that provide access to non-custodial decentralized staking on Ethereum. RocketStake uses [Rocket Pool's network of smart contracts](https://github.com/rocket-pool/rocketpool) to generate ETH rewards.
 
 # Try it on Prater:
 
