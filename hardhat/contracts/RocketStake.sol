@@ -117,8 +117,8 @@ contract RocketStake is IRocketStake {
         // tell the buyer contract to burn some of its rETH and send the ETH proceeds back to this contract
         uint256 reth_to_burn = rocket_token_reth.getRethValue(eth_amount);
         total_reth_held = total_reth_held.sub(reth_to_burn);
-        uint256 eth_received = stakers[msg.sender].reth_buyer.burn(reth_to_burn);
         stakers[msg.sender].staked_reth = stakers[msg.sender].staked_reth.sub(reth_to_burn);
+        uint256 eth_received = stakers[msg.sender].reth_buyer.burn(reth_to_burn);
 
         // transfer staker ETH last to prevent re-entrancy
         payable(msg.sender).transfer(eth_received);
@@ -150,14 +150,13 @@ contract RocketStake is IRocketStake {
         // tell the buyer contract to burn some of its rETH and send the ETH proceeds back to this contract
         uint256 reth_to_burn = rocket_token_reth.getRethValue(eth_amount);
         total_reth_held = total_reth_held.sub(reth_to_burn);
-        uint256 eth_received = stakers[msg.sender].reth_buyer.burn(reth_to_burn);
         stakers[msg.sender].staked_reth = stakers[msg.sender].staked_reth.sub(reth_to_burn);
+        uint256 eth_received = stakers[msg.sender].reth_buyer.burn(reth_to_burn);
 
         // go through the transfer protocol, caller better know they can trust the contract they're migrating to
         IMigrationCompatible(next_contract_address).startTransfer(eth_received, msg.sender);
-        payable(msg.sender).transfer(eth_received);
+        payable(next_contract_address).transfer(eth_received);
         IMigrationCompatible(next_contract_address).closeTransfer(eth_received, msg.sender);
-        total_reth_held = total_reth_held.sub(reth_to_burn);
     }
 
     function accountDepositDelay(address staker) override external view returns(

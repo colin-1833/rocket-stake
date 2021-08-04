@@ -280,7 +280,7 @@ export const DefaultTask = (props: any) => {
     task,
     account
   } = runtime;
-  const width = 690;
+  const width = 500;
   const height = 165;
   const button_section_height = 70;
   return (
@@ -442,7 +442,7 @@ export const DefaultTask = (props: any) => {
                       fontSize: 13,
                       fontFamily: 'arial'
                     }}>
-                    Withdrawal Allowed in: {account.staker.blocks_until_withdrawals_allowed} Blocks
+                    Withdraw in: {account.staker.blocks_until_withdrawals_allowed} Blocks
                   </h3>
                 </div>
               )}
