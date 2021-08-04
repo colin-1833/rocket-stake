@@ -2,7 +2,7 @@
 
 # About
 
-A solidity smart contract and react frontend that provides access to non-custodian decentralized staking for ETH holders.
+A solidity smart contract and react frontend that provides access to non-custodian decentralized staking on Ethereum.
 
 # Try it on Prater:
 
@@ -15,6 +15,10 @@ The staking community has expressed concerns about the tax implications of direc
 # RocketStake's Solution 
 
 RocketStake's web frontend allows ETH holders to "lend" their ETH to RocketStake via MetaMask. Behind the scenes RocketStake converts ETH into rETH. Lenders cannot withdraw rETH directly from the contract, only ETH.
+
+# Does RocketStake take a percentage of staking rewards?
+
+No. The RocketStake contract is a public utility. 
 
 # What is Rocket Pool and rETH?
 
