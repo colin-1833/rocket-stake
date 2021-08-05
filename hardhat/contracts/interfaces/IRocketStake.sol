@@ -21,7 +21,6 @@ interface IRocketStake {
     function rocketPoolRETHCollateral() external view returns(uint256);
     function totalRETHHeld() external view returns(uint256);
     function totalETHHeld() external view returns(uint256);
-    function depositCooldownPassed(address staker) external view returns(bool);
 
     // events
     event Register(address indexed staker_address);

@@ -89,7 +89,15 @@ contract RocketStake is IRocketStake {
         require(eth_amount > 0, "You must withdraw more than 0 ETH");
         require(stakers[staker].exists == true, "Staker not registered yet.");
         require(stakers[staker].staked_reth > 0, "Nothing staked here.");
-        require(depositCooldownPassed(staker) == true, "Rocket Pool will not let you move or withdraw your rETH yet.");
+
+        // ensures that the staker has waited long enough to withdraw from rocket pool
+        // rocket pool has a cooldown period after minting rETH 
+        IRocketStorage rocket_storage = IRocketStorage(rocket_storage_address);
+        require(
+            block.timestamp.sub(stakers[staker].reth_buyer.lastDepositBlock())
+                > rocket_storage.getUint(keccak256(abi.encodePacked(keccak256("dao.protocol.setting.network"), "network.reth.deposit.delay"))), 
+            "Rocket Pool will not let you move or withdraw your rETH yet."
+        );
         _;
     } 
 
@@ -97,7 +105,7 @@ contract RocketStake is IRocketStake {
         if (stakers[msg.sender].exists != true) {
             stakers[msg.sender].exists = true;
             stakers[msg.sender].reth_buyer = new RETHBuyer(rocket_storage_address);
-            
+
             emit Register(msg.sender);
         }
     }
@@ -196,15 +204,6 @@ contract RocketStake is IRocketStake {
         IRocketStorage rocket_storage = IRocketStorage(rocket_storage_address);
         IRocketTokenRETH rocket_token_reth = IRocketTokenRETH(rocket_storage.getAddress(keccak256(abi.encodePacked("contract.address", "rocketTokenRETH"))));
         return rocket_token_reth.getEthValue(total_reth_held);
-    }
-
-    function depositCooldownPassed(address staker) public override view returns(bool) {
-        if (stakers[staker].exists != true) {
-            return true;
-        }
-        IRocketStorage rocket_storage = IRocketStorage(rocket_storage_address);
-        uint256 deposit_delay = rocket_storage.getUint(keccak256(abi.encodePacked(keccak256("dao.protocol.setting.network"), "network.reth.deposit.delay")));
-        return block.timestamp.sub(stakers[staker].reth_buyer.lastDepositBlock()) > deposit_delay;
     }
 
     function _burnAndReturnETH(uint256 eth_amount, address staker) internal returns(uint256 _eth_received) {
