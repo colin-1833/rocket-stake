@@ -123,7 +123,7 @@ contract RocketStake is IRocketStake {
 
         // have the reth_buyer deposit eth for rETH and hold on to it
         // this value will never equal zero because Rocket Pool reverts when depositing an amount below their set minimum
-        // this contract relies on the ui/client to ensure stakers don't trigger such a revert
+        // note: ui should prevent reverting due to lower than minimum deposit error
         uint256 reth_added_to_stake = stakers[msg.sender].reth_buyer.deposit{ value: msg.value }();
 
         // update balances
@@ -148,7 +148,7 @@ contract RocketStake is IRocketStake {
     ) override external safeWithdrawal(eth_amount, msg.sender) {
         uint256 eth_received = _burnAndReturnETH(eth_amount, msg.sender);
 
-        // send the users funds to a contract of their choosing
+        // send the user's funds to a contract of their choosing
         IMigrationCompatible(next_contract_address).startTransfer(eth_received, msg.sender);
         payable(next_contract_address).transfer(eth_received);
         IMigrationCompatible(next_contract_address).closeTransfer(eth_received, msg.sender);
@@ -211,14 +211,14 @@ contract RocketStake is IRocketStake {
         IRocketStorage rocket_storage = IRocketStorage(rocket_storage_address);
         IRocketTokenRETH rocket_token_reth = IRocketTokenRETH(rocket_storage.getAddress(keccak256(abi.encodePacked("contract.address", "rocketTokenRETH"))));
         
-        // make sure we're not trying to withdraw more ETH than our rETH share is worth
+        // make sure the staker is not trying to withdraw more ETH than their staked rETH is worth
         uint256 eth_able_to_be_withdrawn = rocket_token_reth.getEthValue(stakers[staker].staked_reth);
         require(eth_amount <= eth_able_to_be_withdrawn, "You cannot withdraw more ETH than you have staked.");
 
-        // determine how much reth the supplied eth_amount translates to
+        // determine how much rETH the supplied eth_amount translates to
         uint256 reth_to_burn = rocket_token_reth.getRethValue(eth_amount);
 
-        // tell the buyer contract to burn some of its rETH and send the ETH proceeds back to this contract
+        // tell the buyer contract to burn some of its rETH and send the resulting ETH proceeds back to this contract
         uint256 eth_received = stakers[staker].reth_buyer.burn(reth_to_burn);
 
         // add a check in the odd case where no ETH is return by the reth_buyers burn function
