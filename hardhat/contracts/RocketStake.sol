@@ -108,6 +108,7 @@ contract RocketStake is IRocketStake {
         if (stakers[msg.sender].exists != true) {
             stakers[msg.sender].exists = true;
             stakers[msg.sender].reth_buyer = new RETHBuyer(rocket_storage_address);
+
             emit Register(msg.sender);
         }
 
@@ -119,14 +120,16 @@ contract RocketStake is IRocketStake {
         // update balances
         total_reth_held = total_reth_held.add(reth_added_to_stake);
         stakers[msg.sender].staked_reth = stakers[msg.sender].staked_reth.add(reth_added_to_stake);
-        emit AddStake(msg.sender, reth_added_to_stake, msg.value, stakers[msg.sender].staked_reth);
+
+        emit Stake(msg.sender, reth_added_to_stake, msg.value, stakers[msg.sender].staked_reth);
     }
 
     function withdraw(uint256 eth_amount) external override safeWithdrawal(eth_amount, msg.sender) {
         uint256 eth_received = _burnAndReturnETH(eth_amount, msg.sender);
 
         payable(msg.sender).transfer(eth_received);
-        emit AccountWithdraw(msg.sender, eth_received, stakers[msg.sender].staked_reth);
+
+        emit Withdraw(msg.sender, eth_received, stakers[msg.sender].staked_reth);
     }
 
     function migrate(
@@ -139,6 +142,8 @@ contract RocketStake is IRocketStake {
         IMigrationCompatible(next_contract_address).startTransfer(eth_received, msg.sender);
         payable(next_contract_address).transfer(eth_received);
         IMigrationCompatible(next_contract_address).closeTransfer(eth_received, msg.sender);
+
+        emit Migrate(msg.sender, next_contract_address, eth_received);
     }
 
     function accountDepositDelay(address staker) override external view returns(
@@ -215,7 +220,7 @@ contract RocketStake is IRocketStake {
         // tell the buyer contract to burn some of its rETH and send the ETH proceeds back to this contract
         uint256 eth_received = stakers[staker].reth_buyer.burn(reth_to_burn);
 
-        // add a check in the odd case where rocket pool is not crediting the reth buyer sends no ETH back
+        // add a check in the odd case where no ETH is return by the reth_buyers burn function
         require(eth_received > 0, "No ETH was received from the rETH burn");
 
         // update balances

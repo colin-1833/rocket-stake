@@ -20,6 +20,7 @@ interface IRocketStake {
     function accountStakedETH(address staker) external view returns(uint256 eth_amount);
 
     event Register(address indexed staker_address);
-    event AddStake(address indexed staker_address, uint256 reth_added_to_stake, uint256 eth_added_to_stake, uint256 staked_reth);
-    event AccountWithdraw(address indexed staker_address, uint256 withdrawn_eth, uint256 staked_reth);
+    event Stake(address indexed staker_address, uint256 reth_added_to_stake, uint256 eth_added_to_stake, uint256 staked_reth);
+    event Withdraw(address indexed staker_address, uint256 withdrawn_eth, uint256 staked_reth);
+    event Migrate(address indexed staker_address, address next_contract_address, uint256 eth_received);
 }
