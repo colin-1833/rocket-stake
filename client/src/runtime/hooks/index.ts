@@ -191,7 +191,7 @@ export const use_reth_collateral = (runtime: Pick<Runtime, 'queries'|'ethereum'|
     }
     const { contracts: { RocketStake } } = hardhat;
     const rocket_stake = new ethers.Contract(RocketStake.address, RocketStake.abi, ethereum.signer);
-    const reth_collateral_available = await rocket_stake.totalRETHCollateral();
+    const reth_collateral_available = await rocket_stake.rocketPoolRETHCollateral();
     setTotal(Number((Number(ethers.utils.formatUnits(reth_collateral_available, 18))).toFixed(7)));
     resolve();
   } catch (err) { reject(err) }});
@@ -247,12 +247,12 @@ export const use_account = (runtime: Pick<Runtime, 'queries'|'task'|'ethereum'|'
     }
     const { contracts: { RocketStake } } = hardhat;
     const rocket_stake = new ethers.Contract(RocketStake.address, RocketStake.abi, ethereum.signer);
-    const staked_eth = await rocket_stake.accountStakedETH(ethereum.connected_address);
+    const staked_eth = await rocket_stake.stakedETH(ethereum.connected_address);
     const [
       _last_deposit_block, 
       _block_number, 
       _deposit_delay
-    ] = await rocket_stake.accountDepositDelay(ethereum.connected_address);
+    ] = await rocket_stake.depositDelay(ethereum.connected_address);
     const total_reth_held = await rocket_stake.totalRETHHeld();
     const blocks_until_withdrawals_allowed = Math.max(
       0,

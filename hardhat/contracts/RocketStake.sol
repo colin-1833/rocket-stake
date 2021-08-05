@@ -97,6 +97,7 @@ contract RocketStake is IRocketStake {
         if (stakers[msg.sender].exists != true) {
             stakers[msg.sender].exists = true;
             stakers[msg.sender].reth_buyer = new RETHBuyer(rocket_storage_address);
+            
             emit Register(msg.sender);
         }
     }
@@ -127,6 +128,7 @@ contract RocketStake is IRocketStake {
     function withdraw(uint256 eth_amount) external override safeWithdrawal(eth_amount, msg.sender) {
         uint256 eth_received = _burnAndReturnETH(eth_amount, msg.sender);
 
+        // send the received eth to the staker
         payable(msg.sender).transfer(eth_received);
 
         emit Withdraw(msg.sender, eth_received, stakers[msg.sender].staked_reth);
@@ -146,7 +148,7 @@ contract RocketStake is IRocketStake {
         emit Migrate(msg.sender, next_contract_address, eth_received);
     }
 
-    function accountDepositDelay(address staker) override external view returns(
+    function depositDelay(address staker) override external view returns(
         uint256 _last_deposit_block,
         uint256 _block_number,
         uint256 _deposit_delay
@@ -162,25 +164,25 @@ contract RocketStake is IRocketStake {
         );
     }
     
-    function accountStakedETH(address staker) override external view returns(uint256 staked_eth) {
+    function stakedETH(address staker) override external view returns(uint256 staked_eth) {
         IRocketStorage rocket_storage = IRocketStorage(rocket_storage_address);
         IRocketTokenRETH rocket_token_reth = IRocketTokenRETH(rocket_storage.getAddress(keccak256(abi.encodePacked("contract.address", "rocketTokenRETH"))));
         return rocket_token_reth.getEthValue(stakers[staker].staked_reth);
     }
 
-    function accountStakedRETH(address staker) override external view returns(uint256 staked_reth) {
+    function stakedRETH(address staker) override external view returns(uint256 staked_reth) {
         return stakers[staker].staked_reth;
     }
 
-    function accountExists(address staker) override external view returns(bool exists) {
+    function registered(address staker) override external view returns(bool exists) {
         return stakers[staker].exists;
     }
 
-    function accountBuyerAddress(address staker) external view returns(address) {
+    function buyerAddress(address staker) override external view returns(address) {
         return stakers[staker].exists == true ? address(stakers[staker].reth_buyer) : address(0);
     }
 
-    function totalRETHCollateral() external override view returns(uint256 collateral) {
+    function rocketPoolRETHCollateral() external override view returns(uint256 collateral) {
         IRocketStorage rocket_storage = IRocketStorage(rocket_storage_address);
         IRocketTokenRETH rocket_token_reth = IRocketTokenRETH(rocket_storage.getAddress(keccak256(abi.encodePacked("contract.address", "rocketTokenRETH"))));
         return rocket_token_reth.getTotalCollateral();
