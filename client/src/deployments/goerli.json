@@ -3,7 +3,7 @@
   "chainId": "5",
   "contracts": {
     "RocketStake": {
-      "address": "0x8232B455FFc081F9Fba35Fe2A04165bA2949F4eb",
+      "address": "0xb8bf1B275A315Bc0417d2055Cf79c41335908385",
       "abi": [
         {
           "inputs": [

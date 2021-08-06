@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/stubs/RocketStorage.sol": {
+      "content": "// SPDX-License-Identifier: AGPL-1.0\npragma solidity ^0.8.0;\n\ninterface RocketStorageInterface {\n    function getAddress(bytes32 _key) external view returns (address);\n    function setAddress(bytes32 _key, address _value) external;\n    function setUint(bytes32 _key, uint256 value) external;\n    function getUint(bytes32 _key) external returns(uint256 value);\n}\n\ncontract RocketStorage is RocketStorageInterface {\n    mapping(bytes32 => address)    private addresses;\n    address owner;\n\n    constructor() {\n      owner = msg.sender;\n    }\n\n    function getAddress(bytes32 _key) override public view returns (address) {\n        return addresses[_key];\n    }\n\n    function setAddress(bytes32 _key, address _value) override public {\n        require(owner == msg.sender, \"You must be the owner to do that.\");\n        addresses[_key] = _value;\n    }\n\n    function getUint(bytes32 _key) override external view returns (uint256 r) {\n        assembly {\n            r := sload (_key)\n        }\n    }\n\n    function setUint(bytes32 _key, uint _value) override external {\n        require(msg.sender == owner, \"Mufst be the owner to do that.\");\n        assembly {\n            sstore (_key, _value)\n        }\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

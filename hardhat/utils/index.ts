@@ -51,8 +51,15 @@ interface PrimaryContracts {
   RocketStake: UseContract|null
 };
 
+interface StrubbedContracts {
+    RocketDepositPool: UseContract|null,
+    RocketStorage: UseContract|null,
+    RocketTokenRETH: UseContract|null
+};
+
 interface UseContractsStore {
   primary_contracts: PrimaryContracts, 
+  stubbed_contracts: StrubbedContracts,
   deployer: Signer,
   users: Array<Signer>
 };
@@ -64,16 +71,79 @@ export const use_contracts = (hre: HardhatRuntimeEnvironment): {
   deploy_mainnet: (opts: { 
     rocket_pool_storage_address: string
   }) => Promise<any>, 
+  deploy_stubbed_testnet: () => Promise<any>,
   store: UseContractsStore
 } => {
   let store: UseContractsStore = {
     primary_contracts: {
       RocketStake: null
     },
+    stubbed_contracts: {
+        RocketDepositPool: null,
+        RocketStorage: null,
+        RocketTokenRETH: null
+    },
     deployer: null,
     users: []
   };
   return {
+    deploy_stubbed_testnet: (): Promise<void> => new Promise(async (resolve, reject) => { try {
+        const unnamed_signers = await hre.ethers.getUnnamedSigners();
+        store.deployer = unnamed_signers[0]
+        store.users = unnamed_signers.slice(1);
+        store.stubbed_contracts.RocketStorage = await deploy(
+            hre,
+            'RocketStorage',
+            { 
+                from: await store.deployer.getAddress(), 
+                args: []
+            }
+        );
+        store.stubbed_contracts.RocketTokenRETH = await deploy(
+            hre,
+            'RocketTokenRETH',
+            { 
+                from: await store.deployer.getAddress(), 
+                args: [
+                    store.stubbed_contracts.RocketStorage(store.deployer).address
+                ]
+            }
+        );
+        store.stubbed_contracts.RocketDepositPool = await deploy(
+            hre,
+            'RocketDepositPool',
+            { 
+                from: await store.deployer.getAddress(), 
+                args: [
+                    store.stubbed_contracts.RocketTokenRETH(store.deployer).address,
+                    store.stubbed_contracts.RocketStorage(store.deployer).address
+                ]
+            }
+        );
+        store.primary_contracts.RocketStake = await deploy(
+            hre,
+            'RocketStake',
+            { 
+                from: await store.deployer.getAddress(), 
+                args: [
+                    store.stubbed_contracts.RocketStorage(store.deployer).address
+                ]
+            }
+        );
+        await store.stubbed_contracts.RocketStorage(store.deployer).setUint(
+            ethers.utils.solidityKeccak256(['string', 'string'], ['dao.protocol.setting.network', 'network.reth.deposit.delay']),
+            6
+        );
+        await store.stubbed_contracts.RocketStorage(store.deployer).setAddress(
+            ethers.utils.solidityKeccak256(['string', 'string'], ['contract.address', 'rocketTokenRETH']),
+            store.stubbed_contracts.RocketTokenRETH(store.deployer).address
+        );
+        await store.stubbed_contracts.RocketStorage(store.deployer).setAddress(
+            ethers.utils.solidityKeccak256(['string', 'string'], ['contract.address', 'rocketDepositPool']),
+            store.stubbed_contracts.RocketDepositPool(store.deployer).address
+        );
+        resolve();
+      } catch (err) { reject(err) }}),
     deploy_live_testnet: ({
       rocket_pool_storage_address
     }): Promise<void> => new Promise(async (resolve, reject) => { try {

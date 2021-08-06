@@ -6,6 +6,9 @@
     // Controls if suggestions should be accepted 'Enter' - in addition to 'Tab'. Helps to avoid ambiguity between inserting new lines or accepting suggestions.
     "editor.acceptSuggestionOnEnter": "off",
     "editor.parameterHints": false,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
     "files.exclude": {
         
     },

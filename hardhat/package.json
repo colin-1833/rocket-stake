@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "deploy-goerli": "rm -rf ./cache ./deployments/goerli ./artifacts && npx hardhat deploy --network goerli --export ../client/src/deployments/goerli.json",
-    "deploy-mainnet": "rm -rf ./cache ./artifacts && npx hardhat deploy --network mainnet --export ../client/src/deployments/mainnet.json"
+    "deploy-mainnet": "rm -rf ./cache ./artifacts && npx hardhat deploy --network mainnet --export ../client/src/deployments/mainnet.json",
+    "test": "npx hardhat test ./test/rocket-stake.ts"
   },
   "devDependencies": {
     "@nomiclabs/buidler": "^1.4.8",

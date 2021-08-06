@@ -17,6 +17,9 @@ dotenv.config({ path: path_to_env });
 
 const config: HardhatUserConfig = {
   networks: {
+    hardhat: {
+        chainId: 1337
+    },
     goerli: {
       chainId: 5,
       url: process.env.GOERLI_INFURA,
