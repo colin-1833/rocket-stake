@@ -95,6 +95,7 @@ describe('RocketStake', function () {
         try {
             await (await store.primary_contracts.RocketStake(store.deployer)
                 .withdraw(utils.parse_eth(90))).wait(1);
+            throw new Error('Expected to fail due to trying to withdraw too much ETH.');
         } catch(err) {}
     });
   });
