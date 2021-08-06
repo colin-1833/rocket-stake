@@ -21,6 +21,8 @@ contract RETHBuyer {
         owner = msg.sender;
     }
 
+    receive() external payable {}
+
     modifier onlyOwner {
         require(msg.sender == owner, "Only RocketStake can do that");
         _;
