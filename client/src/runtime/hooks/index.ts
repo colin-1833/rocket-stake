@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as constants from '../constants/index';
 import query_string from 'query-string';
-import config from '../../config';
 import {
     networks as deployment_networks
 } from '../../deployments/index';
@@ -163,8 +162,12 @@ export const use_hardhat = (runtime: Pick<Runtime, 'queries' | 'ethereum'>) => {
     if (String(ethereum.connected_chain_id) === 'null') {
         return null;
     }
+    const subdomain = window.location.host.split('.')[0];
+    if (subdomain === 'prater') {
+        return deployment_networks.prater;
+    }
     if (ethereum.connected_network.name === 'goerli') {
-        return deployment_networks[ethereum.connected_network.name];
+        return deployment_networks.goerli;
     }
     return null;
 };

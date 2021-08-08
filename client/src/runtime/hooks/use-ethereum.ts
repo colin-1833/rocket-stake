@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import * as constants from '../constants/index';
-import { toast } from './index'
 import type {
     Ethereum,
     NetworkName,

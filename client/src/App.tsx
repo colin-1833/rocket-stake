@@ -152,14 +152,15 @@ function App(props: { dimensions: Dimensions }) {
     if (!runtime) {
         return null;
     }
-    const { ethereum } = runtime;
+    const { ethereum, hardhat } = runtime;
+    const not_deployed = String(hardhat) === 'null' || Object.keys(hardhat).length === 0;
     if (ethereum.page_loading) {
         return <Loading />;
     }
     if (!ethereum.connection_loading && ethereum.connected_network.name !== ethereum.connected_network.expects) {
         return <TryDiffNetwork />;
     }
-    if (!ethereum.connection_loading && !ethereum.connected_network.name) {
+    if ((!ethereum.connection_loading && !ethereum.connected_network.name) || not_deployed) {
         return <NotDeployedYet />;
     }
     return (
