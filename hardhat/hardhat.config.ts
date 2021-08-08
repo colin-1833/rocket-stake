@@ -25,6 +25,11 @@ const config: HardhatUserConfig = {
             url: process.env.GOERLI_INFURA,
             accounts: [process.env.GOERLI_PRIVATE_KEY]
         },
+        prater: {
+            chainId: 5,
+            url: process.env.GOERLI_INFURA,
+            accounts: [process.env.GOERLI_PRIVATE_KEY]
+        },
         mainnet: {
             chainId: 1,
             url: process.env.MAINNET_INFURA,

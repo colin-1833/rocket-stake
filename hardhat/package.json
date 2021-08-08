@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "deploy-goerli": "rm -rf ./cache ./deployments/goerli ./artifacts && npx hardhat deploy --network goerli --export ../client/src/deployments/goerli.json",
+    "deploy-prater": "rm -rf ./cache ./deployments/prater ./artifacts && npx hardhat deploy --network prater --export ../client/src/deployments/prater.json",
     "deploy-mainnet": "rm -rf ./cache ./artifacts && npx hardhat deploy --network mainnet --export ../client/src/deployments/mainnet.json",
     "test": "npx hardhat test ./test/rocket-stake.ts"
   },
