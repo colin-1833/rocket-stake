@@ -6,15 +6,15 @@ const GOERLI_ROCKET_STAKE_ADDRESS = deployments.networks.goerli.contracts.Rocket
 const MAINNET_ROCKET_STAKE_ADDRESS = '';
 
 const config = {
-  "github_url": "https://github.com/colin-1833/rocket-stake",
-  "rETH_address": {
-    "goerli": GOERLI_rETH_ADDRESS,
-    "mainnet": MAINNET_rETH_ADDRESS
-  },
-  "rocket_stake_address": {
-    "goerli": GOERLI_ROCKET_STAKE_ADDRESS,
-    "mainnet": MAINNET_ROCKET_STAKE_ADDRESS
-  }
+    "github_url": "https://github.com/colin-1833/rocket-stake",
+    "rETH_address": {
+        "goerli": GOERLI_rETH_ADDRESS,
+        "mainnet": MAINNET_rETH_ADDRESS
+    },
+    "rocket_stake_address": {
+        "goerli": GOERLI_ROCKET_STAKE_ADDRESS,
+        "mainnet": MAINNET_ROCKET_STAKE_ADDRESS
+    }
 };;
 
 export default config;

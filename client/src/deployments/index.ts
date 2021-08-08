@@ -16,5 +16,5 @@ export const networks = {
 };
 
 export const deployed = Object.entries(networks)
-    .filter(([,config]) => Object.keys(config).length > 0)
+    .filter(([, config]) => Object.keys(config).length > 0)
     .map(([network]) => network.toLowerCase());
