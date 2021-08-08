@@ -6,14 +6,15 @@ import mainnet from './mainnet.json';
 import local from './local.json';
 
 export const networks = {
-  goerli,
-  kovan,
-  ropsten,
-  mainnet,
-  rinkeby,
-  local
+    prater: goerli,
+    goerli,
+    kovan,
+    ropsten,
+    mainnet,
+    rinkeby,
+    local
 };
 
 export const deployed = Object.entries(networks)
-  .filter(([,config]) => Object.keys(config).length > 0)
-  .map(([network]) => network.toLowerCase());
+    .filter(([,config]) => Object.keys(config).length > 0)
+    .map(([network]) => network.toLowerCase());

@@ -8,6 +8,7 @@
 
     "deploy-site-mainnet": "cd client && yarn build && surge build www.rocketstake.org && surge build rocketstake.org",
     "deploy-site-goerli": "cd client && yarn build && surge build goerli.rocketstake.org",
+    "deploy-site-prater": "cd client && yarn build && surge build prater.rocketstake.org",
     
     "deploy-contract-mainnet": "cd hardhat && yarn deploy-mainnet",
     "deploy-contract-goerli": "cd hardhat && yarn deploy-goerli",

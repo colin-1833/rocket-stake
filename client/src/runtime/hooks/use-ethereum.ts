@@ -22,6 +22,9 @@ const map_subdomain_to_network = (): NetworkName => {
   ) {
     return subdomain;
   }
+  if (subdomain === 'prater') {
+      return 'goerli';
+  }
   if (subdomain === 'www' || subdomain === 'mainnet') {
     return 'mainnet';
   }
