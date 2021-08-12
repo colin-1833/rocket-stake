@@ -154,10 +154,12 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
         }
         window.ethereum.on('accountsChanged', (accounts: Array<any>) => {
             setPageLoading(true);
+            queries.clear();
             connect_metamask(accounts);
         });
         window.ethereum.on('chainChanged', (chain_id: any) => {
             setPageLoading(true);
+            queries.clear();
             connect_metamask(null);
         });
         window.ethereum.on('connect', (chain_id: any) => {
@@ -166,6 +168,7 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
         });
         window.ethereum.on('disconnect', (chain_id: any) => {
             setPageLoading(true);
+            queries.clear();
             clear_data();
             setConnectionLoading(false);
             setPageLoading(false);
