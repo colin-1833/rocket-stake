@@ -62,17 +62,18 @@ export const use_queries = (): Queries => {
     const [params, setParams] = useState<any>(query_string.parse(window.location.search));
     useEffect(() => {
         setParams(query_string.parse(window.location.search));
-    }, []);
+    }, [window.location.search]);
     return {
         clear: () => {
             window.history.pushState(null, '', window.location.origin + window.location.pathname);
             setParams({});
         },
         remove: (key: string) => {
-            if (typeof params[key] === 'undefined') {
+            const parsed_search = query_string.parse(window.location.search);
+            if (typeof parsed_search[key] === 'undefined') {
                 return;
             }
-            const reconstructed_params = Object.entries(query_string.parse(window.location.search))
+            const reconstructed_params = Object.entries(parsed_search)
                 .filter(([param_key]) => param_key !== key)
                 .reduce((accum: any, [param_key, val]) => {
                     accum[param_key] = val;
@@ -86,7 +87,7 @@ export const use_queries = (): Queries => {
                 + window.location.pathname
                 + (new_search ? ('?' + new_search) : '')
             );
-            setParams(query_string.parse((new_search ? ('?' + new_search) : '')));
+            setParams(reconstructed_params);
         },
         add: (key: string, val: any) => {
             const reconstructed_params = Object.entries(query_string.parse(window.location.search))
@@ -96,7 +97,6 @@ export const use_queries = (): Queries => {
                     accum[_param_key] = _val;
                     return accum;
                 }, {});
-
             const new_search = query_string.stringify(reconstructed_params);
             window.history.pushState(
                 null,

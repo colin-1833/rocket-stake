@@ -56,8 +56,7 @@ const Page = () => {
                     }}>View on Etherscan.io</p>
                 </div>
                 <div style={{
-                    display: 'flex',
-                    marginRight: 15
+                    display: 'flex'
                 }}>
                     <ReactLoaderSpinner
                         type="Oval"

@@ -36,7 +36,8 @@ const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, 
             account,
             ethereum,
             task,
-            queries
+            queries,
+            toast
         } = runtime;
         if (String(hardhat) === 'null' || Object.keys(hardhat).length === 0) {
             return resolve('');
@@ -51,18 +52,21 @@ const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, 
         queries.remove('pending_tx');
         queries.remove('pending_tx_method');
         queries.remove('pending_tx_success_message');
-        queries.remove('pending_tx_success');
+        queries.remove('success_message');
         ethereum.add_pending_transaction({ tx, method });
         task.set('', []);
         try {
-            await tx.wait(1);
-            await account.reload();
-            const confirmed_tx = await tx.wait(2);
+            const confirmed_tx = await tx.wait(3);
             await account.reload();
             resolve(confirmed_tx.transactionHash);
-        } catch (err) {
+        } catch (err: any) {
             reject(err);
+            toast.error(err.message ? err.message : 'Contract call failed.')
         } finally {
+            queries.remove('pending_tx');
+            queries.remove('pending_tx_method');
+            queries.remove('pending_tx_success_message');
+            queries.remove('success_message');
             ethereum.remove_pending_transaction(tx.hash);
         }
     } catch (err) { reject(err) }

@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import * as constants from '../constants/index';
+import * as deployments from '../../deployments/index';
+import { ethers, ContractReceipt } from 'ethers';
 import type {
     Ethereum,
     NetworkName,
     Runtime,
     PendingTransaction
 } from '../interfaces';
-import {
-    networks as deployment_networks
-} from '../../deployments/index';
-import { ethers, ContractReceipt } from 'ethers';
 
 const map_subdomain_to_network = (): NetworkName => {
     const subdomain = window.location.host.split('.')[0];
@@ -93,8 +91,7 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
             if (accounts.length && accounts.length === 0) {
                 throw new Error('No accounts found');
             }
-            const _connected_address = typeof accounts[0] === 'string' ? accounts[0] : '';
-            setConnectedAddress(_connected_address);
+            setConnectedAddress(typeof accounts[0] === 'string' ? accounts[0] : '');
             const chain_id = await window.ethereum.request({
                 method: 'net_version',
                 params: []
@@ -113,30 +110,30 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
         const _web3 = new ethers.providers.Web3Provider(window.ethereum, 'any');
         if (_web3) {
             const receipt: ContractReceipt = await _web3.getTransactionReceipt(queries.params.pending_tx);
-            if (receipt && receipt.blockNumber) {
-                if (queries.params.pending_tx_success_message) {
-                    window.location.href = window.location.origin + window.location.pathname
-                        + '?successful_tx=' + queries.params.pending_tx
-                        + '&successful_tx_method=' + queries.params.pending_tx_method
-                        + '&success_message=' + queries.params.pending_tx_success_message
-                }
+            if (receipt && receipt.blockNumber > 2 && receipt.status === 1) {
+                window.location.href = window.location.origin + window.location.pathname
+                    + '?successful_tx=' + queries.params.pending_tx
+                    + '&successful_tx_method=' + queries.params.pending_tx_method
+                    + '&success_message=' + queries.params.pending_tx_success_message
+            }
+            if (receipt && receipt.status === 0) {
+                func();
             }
         }
     };
     useEffect(() => {
         if (queries.params.pending_tx) {
-            let interval = setInterval(() => {
-                if (String(queries.params.pending_tx_success) !== 'true') {
-                    remove_non_pending_transaction_queries(() => clearInterval(interval));
-                }
-            }, 4000);
+            let interval = setInterval(() => remove_non_pending_transaction_queries(
+                () => clearInterval(interval)
+            ), 4000);
             return () => clearInterval(interval);
         }
-    }, [queries.params.pending_tx]);
+    }, []);
     useEffect(() => {
         if (pending_transactions.length > 0) {
             queries.remove('successful_tx');
             queries.remove('successful_tx_method');
+            queries.remove('success_message');
             queries.add(
                 'pending_tx',
                 pending_transactions.slice().reverse()[0].tx.hash
@@ -203,8 +200,8 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
             expects: map_subdomain_to_network(),
             correct_subdomain: connected_network_name === map_subdomain_to_network(),
             deployed: !(
-                String(deployment_networks[connected_network_name]) === 'null'
-                || Object.keys(deployment_networks[connected_network_name]).length === 0
+                String(deployments.networks[connected_network_name]) === 'null'
+                || Object.keys(deployments.networks[connected_network_name]).length === 0
             ),
             color
         },
