@@ -16,12 +16,20 @@ contract RETHBuyer {
     address rocket_storage_address;
     address owner;
 
+    event FallbackHit(address sender, uint256 value);
+    event ReceiveHit(address sender, uint256 value);
+
     constructor(address _rocket_storage_address) {
         rocket_storage_address = _rocket_storage_address;
         owner = msg.sender;
     }
 
-    receive() external payable {}
+    fallback() external payable {
+        emit FallbackHit(msg.sender, msg.value);
+    }
+    receive() external payable {
+        emit ReceiveHit(msg.sender, msg.value);
+    }
 
     modifier onlyOwner {
         require(msg.sender == owner, "Only RocketStake can do that");
@@ -71,6 +79,9 @@ contract RETHBuyer {
 contract RocketStake is IRocketStake {
     using SafeMath for uint256;
 
+    event FallbackHit(address sender, uint256 value);
+    event ReceiveHit(address sender, uint256 value);
+
     struct Staker {
         RETHBuyer reth_buyer;
         uint256 staked_reth;
@@ -85,7 +96,12 @@ contract RocketStake is IRocketStake {
         rocket_storage_address = _rocket_storage_address;
     }
 
-    receive() external payable {}
+    fallback() external payable {
+        emit FallbackHit(msg.sender, msg.value);
+    }
+    receive() external payable {
+        emit ReceiveHit(msg.sender, msg.value);
+    }
 
     modifier safeWithdrawal(uint256 eth_amount, address staker) {
         require(eth_amount > 0, "You must withdraw more than 0 ETH");
@@ -139,7 +155,7 @@ contract RocketStake is IRocketStake {
         uint256 eth_received = _burnAndReturnETH(eth_amount, msg.sender);
 
         // send the received eth to the staker
-        payable(msg.sender).transfer(eth_received);
+        msg.sender.transfer(eth_received);
 
         emit Withdraw(msg.sender, eth_received, stakers[msg.sender].staked_reth);
     }
