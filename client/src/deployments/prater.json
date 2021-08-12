@@ -3,7 +3,7 @@
   "chainId": "5",
   "contracts": {
     "RocketStake": {
-      "address": "0xe5cAa1c7B78C2B9bEF9F126b9a54c206b2ABfB87",
+      "address": "0x38F81261100e8FF74Be3AF84D0e585eE76CeE9B7",
       "abi": [
         {
           "inputs": [
@@ -15,6 +15,25 @@
           ],
           "stateMutability": "nonpayable",
           "type": "constructor"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Fallback",
+          "type": "event"
         },
         {
           "anonymous": false,
@@ -39,6 +58,25 @@
             }
           ],
           "name": "Migrate",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Receive",
           "type": "event"
         },
         {
@@ -109,6 +147,10 @@
           ],
           "name": "Withdraw",
           "type": "event"
+        },
+        {
+          "stateMutability": "payable",
+          "type": "fallback"
         },
         {
           "inputs": [
