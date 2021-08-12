@@ -16,7 +16,6 @@ const Page = () => {
         constants
     } = runtime;
     const Task = Tasks.use_router({ task });
-    const successfully_mined = String(queries.params.pending_tx_success) === 'true';
     const pending_tx_ui = (
         <div onClick={() => window.open(CONTAINER.get_etherscan_base(runtime) + '/tx/' + queries.params.pending_tx, '_blank')} style={{
             cursor: 'pointer',
@@ -40,7 +39,7 @@ const Page = () => {
                     <p style={{
                         fontSize: 16,
                         fontWeight: 'bold',
-                        color: successfully_mined ? constants.colors.background : 'rgba(255, 255, 255, 1)',
+                        color: 'rgba(255, 255, 255, 1)',
                         fontFamily: 'arial',
                         margin: 0, padding: 0,
                         marginBottom: 15
@@ -109,11 +108,51 @@ const Page = () => {
             </div>
         </div>
     );
+    const failed_tx_ui = (
+        <div onClick={() => window.open(CONTAINER.get_etherscan_base(runtime) + '/tx/' + queries.params.failed_tx, '_blank')} style={{
+            cursor: 'pointer',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            width: '100%',
+            borderRadius: 9,
+            marginTop: 20,
+            backgroundColor: constants.colors.error_red,
+            position: 'relative'
+        }}>
+            <div style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                width: '100%',
+                margin: 20
+            }}>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}>
+                    <p style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: 'white',
+                        fontFamily: 'arial',
+                        margin: 0, padding: 0,
+                        marginBottom: 15
+                    }}>{`Your last transaction failed!`}</p>
+                    <p style={{
+                        margin: 0, padding: 0,
+                        color: 'white',
+                        fontFamily: 'arial',
+                        fontSize: 13,
+                        textDecoration: 'underline'
+                    }}>View on Etherscan.io</p>
+                </div>
+            </div>
+        </div>
+    );
     return (
         <>
             <ToolBar />
             <Task pending_tx={queries.params.pending_tx ? pending_tx_ui : (
-                queries.params.successful_tx ? successful_tx_ui : null
+                queries.params.successful_tx ? successful_tx_ui : (
+                    queries.params.failed_tx ? failed_tx_ui : null
+                )
             )} />
         </>
     )

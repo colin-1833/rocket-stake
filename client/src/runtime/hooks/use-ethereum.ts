@@ -110,7 +110,7 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
         const _web3 = new ethers.providers.Web3Provider(window.ethereum, 'any');
         if (_web3) {
             const receipt: ContractReceipt = await _web3.getTransactionReceipt(queries.params.pending_tx);
-            if (receipt && receipt.blockNumber > 2 && receipt.status === 1) {
+            if (receipt && receipt.blockNumber) {
                 window.location.href = window.location.origin + window.location.pathname
                     + '?successful_tx=' + queries.params.pending_tx
                     + '&successful_tx_method=' + queries.params.pending_tx_method
@@ -128,7 +128,7 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
             ), 4000);
             return () => clearInterval(interval);
         }
-    }, []);
+    }, [queries.params.pending_tx]);
     useEffect(() => {
         if (pending_transactions.length > 0) {
             queries.remove('successful_tx');

@@ -50,8 +50,8 @@ const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, 
         console.log(`ESTIMATED GAS: ${gas_cost} ETH`);
         const tx: ContractTransaction = await rocket_stake[method](...args, overrides || {});
         queries.remove('pending_tx');
+        queries.remove('failed_tx');
         queries.remove('pending_tx_method');
-        queries.remove('pending_tx_success_message');
         queries.remove('success_message');
         ethereum.add_pending_transaction({ tx, method });
         task.set('', []);
@@ -61,12 +61,13 @@ const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, 
             resolve(confirmed_tx.transactionHash);
         } catch (err: any) {
             reject(err);
-            toast.error(err.message ? err.message : 'Contract call failed.')
-        } finally {
             queries.remove('pending_tx');
             queries.remove('pending_tx_method');
             queries.remove('pending_tx_success_message');
             queries.remove('success_message');
+            queries.add('failed_tx', tx.hash);
+            toast.error(typeof err.message === 'string' ? (err.message.slice(0, 26) + '...') : (method + ' function failed.'))
+        } finally {
             ethereum.remove_pending_transaction(tx.hash);
         }
     } catch (err) { reject(err) }
@@ -92,7 +93,6 @@ export const withdraw_stake = async (params: {
                 const success_message = `You successfully withdrew your ${stake_to_withdraw} ETH stake!`;
                 runtime.queries.add('pending_tx_success_message', success_message);
                 await main_contract_call(runtime, 'withdraw', [eth_as_big_number]);
-                runtime.toast.success(success_message);
                 resolve();
             } catch (err) { reject(err) }
         })
@@ -119,7 +119,6 @@ export const increase_stake = async (params: {
                 const success_message = `You successfully increased your stake by ${increase_stake_total} ETH!`;
                 runtime.queries.add('pending_tx_success_message', success_message);
                 await main_contract_call(runtime, 'stake', [], { value: eth_as_big_number });
-                runtime.toast.success(success_message);
                 resolve();
             } catch (err) { reject(err) }
         })
