@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-1.0
-pragma solidity ^0.8.0;
+pragma solidity 0.7.6;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 interface RocketTokenRETHInterface {
     function getTotalCollateral() external view returns (uint256);
@@ -74,7 +74,7 @@ contract RocketTokenRETH is RocketTokenRETHInterface, ERC20 {
         require(blocks_passed > 6, "6 blocks must pass first");
         uint256 ethAmount = getEthValue(_rethAmount);
         _burn(msg.sender, _rethAmount);
-        payable(msg.sender).transfer(ethAmount);
+        msg.sender.transfer(ethAmount);
         return ethAmount;
     }
 

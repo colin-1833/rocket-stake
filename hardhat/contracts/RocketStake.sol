@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-1.0
-pragma solidity ^0.8.0;
+pragma solidity 0.7.6;
 
 import './libraries/Counters.sol';
 import './libraries/SafeMath.sol';
@@ -14,10 +14,10 @@ contract RETHBuyer {
     using SafeMath for uint256;
     
     address rocket_storage_address;
-    address owner;
+    address payable owner;
 
-    event FallbackHit(address sender, uint256 value);
-    event ReceiveHit(address sender, uint256 value);
+    event Fallback(address sender, uint256 value);
+    event Receive(address sender, uint256 value);
 
     constructor(address _rocket_storage_address) {
         rocket_storage_address = _rocket_storage_address;
@@ -25,10 +25,11 @@ contract RETHBuyer {
     }
 
     fallback() external payable {
-        emit FallbackHit(msg.sender, msg.value);
+        emit Fallback(msg.sender, msg.value);
     }
+
     receive() external payable {
-        emit ReceiveHit(msg.sender, msg.value);
+        emit Receive(msg.sender, msg.value);
     }
 
     modifier onlyOwner {
@@ -49,7 +50,7 @@ contract RETHBuyer {
         uint256 eth_received = address(this).balance.sub(starting_balance);
 
         // send the owner of this contract the eth received from rocket pool and return
-        payable(owner).transfer(eth_received);
+        owner.transfer(eth_received);
         return eth_received;
     } 
 
@@ -79,8 +80,8 @@ contract RETHBuyer {
 contract RocketStake is IRocketStake {
     using SafeMath for uint256;
 
-    event FallbackHit(address sender, uint256 value);
-    event ReceiveHit(address sender, uint256 value);
+    event Fallback(address sender, uint256 value);
+    event Receive(address sender, uint256 value);
 
     struct Staker {
         RETHBuyer reth_buyer;
@@ -97,10 +98,11 @@ contract RocketStake is IRocketStake {
     }
 
     fallback() external payable {
-        emit FallbackHit(msg.sender, msg.value);
+        emit Fallback(msg.sender, msg.value);
     }
+    
     receive() external payable {
-        emit ReceiveHit(msg.sender, msg.value);
+        emit Receive(msg.sender, msg.value);
     }
 
     modifier safeWithdrawal(uint256 eth_amount, address staker) {
