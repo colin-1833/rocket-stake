@@ -306,7 +306,7 @@ export const DefaultTask = (props: any) => {
                     <div onClick={async (e) => { await account.reload(); }} style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         position: 'absolute',
-                        zIndex: 1000,
+                        zIndex: 10,
                         width: 40,
                         height: 40,
                         top: -10,
