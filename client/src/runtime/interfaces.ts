@@ -11,15 +11,20 @@ export interface Network {
     color: string
 };
 
-export interface PendingTransaction {
-    tx: ContractTransaction,
-    method: string
+export type PastTransactionStatus = 'pending'|'failed'|'succeeded';
+
+export interface PastTransaction {
+    tx?: ContractTransaction,
+    hash: string,
+    method: string,
+    status: PastTransactionStatus,
+    modified_at: number
 };
 
 export interface Ethereum {
-    pending_transactions: Array<PendingTransaction>,
-    add_pending_transaction: (pending_transaction: PendingTransaction) => void,
-    remove_pending_transaction: (tx_hash: string) => void,
+    past_transactions: Array<PastTransaction>,
+    add_past_transaction: (past_transaction: PastTransaction) => void,
+    set_past_transaction_status: (tx_hash: string, status: PastTransactionStatus) => void,
     connect_metamask: Function,
     dry_connect_metamask: Function,
     connected_address: string,

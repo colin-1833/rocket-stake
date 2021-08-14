@@ -116,10 +116,7 @@ export const use_toast = (runtime: Pick<Runtime, 'queries' | 'account' | 'consta
         account,
         queries
     } = runtime;
-    useEffect(() => {
-        if (account.loading) {
-            return
-        }
+    const use_and_remove_toast_success_param = () => {
         const success_message_param = 'success_message';
         if (
             typeof queries.params[success_message_param] === 'string'
@@ -130,7 +127,22 @@ export const use_toast = (runtime: Pick<Runtime, 'queries' | 'account' | 'consta
             }, 300);
         }
         queries.remove(success_message_param);
-    }, [account.loading])
+    };
+    useEffect(() => {
+        if (account.loading) {
+            return
+        }
+        use_and_remove_toast_success_param();
+    }, [account.loading]);
+
+    useEffect(() => {
+        if (account.loading) {
+            return
+        }
+        if (queries.params.success_message) {
+            use_and_remove_toast_success_param();
+        }
+    }, [queries.params.success_message]);
     return toast;
 }
 

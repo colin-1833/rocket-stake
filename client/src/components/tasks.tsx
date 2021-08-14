@@ -63,7 +63,7 @@ const Card = (props: { children: React.ReactNode, on_close: Function, style?: an
     );
 };
 
-export const ConfirmWithdrawal = (props: { pending_tx: React.ReactNode }) => {
+export const ConfirmWithdrawal = (props: { past_transactions_ui: React.ReactNode }) => {
     const runtime = use_runtime();
     const {
         task,
@@ -149,14 +149,14 @@ export const ConfirmWithdrawal = (props: { pending_tx: React.ReactNode }) => {
                     </>
                 </Card>
                 <div style={{ display: 'flex', width: 500 }}>
-                    {props.pending_tx}
+                    {props.past_transactions_ui}
                 </div>
             </div>
         </div>
     );
 };
 
-export const IncreaseStake = (props: { pending_tx: React.ReactNode }) => {
+export const IncreaseStake = (props: { past_transactions_ui: React.ReactNode }) => {
     const runtime = use_runtime();
     const {
         task,
@@ -232,7 +232,7 @@ export const IncreaseStake = (props: { pending_tx: React.ReactNode }) => {
                     </>
                 </Card>
                 <div style={{ display: 'flex', width: 500 }}>
-                    {props.pending_tx}
+                    {props.past_transactions_ui}
                 </div>
             </div>
         </div>
@@ -452,7 +452,7 @@ export const DefaultTask = (props: any) => {
                 </div>
             </div>
             <div style={{ display: 'flex', width }}>
-                {props.pending_tx}
+                {props.past_transactions_ui}
             </div>
         </div>
     );

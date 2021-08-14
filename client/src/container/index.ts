@@ -50,10 +50,9 @@ const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, 
         console.log(`ESTIMATED GAS: ${gas_cost} ETH`);
         const tx: ContractTransaction = await rocket_stake[method](...args, overrides || {});
         queries.remove('pending_tx');
-        queries.remove('failed_tx');
         queries.remove('pending_tx_method');
         queries.remove('success_message');
-        ethereum.add_pending_transaction({ tx, method });
+        ethereum.add_past_transaction({ status: 'pending', tx, hash: tx.hash, method, modified_at: Date.now() });
         task.set('', []);
         try {
             const confirmed_tx = await tx.wait(3);
@@ -65,10 +64,9 @@ const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, 
             queries.remove('pending_tx_method');
             queries.remove('pending_tx_success_message');
             queries.remove('success_message');
-            queries.add('failed_tx', tx.hash);
             toast.error(typeof err.message === 'string' ? (err.message.slice(0, 26) + '...') : (method + ' function failed.'))
         } finally {
-            ethereum.remove_pending_transaction(tx.hash);
+            ethereum.set_past_transaction_status(tx.hash, 'failed');
         }
     } catch (err) { reject(err) }
 });
