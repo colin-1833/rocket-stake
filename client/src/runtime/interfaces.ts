@@ -18,7 +18,8 @@ export interface PastTransaction {
     hash: string,
     method: string,
     status: PastTransactionStatus,
-    modified_at: number
+    modified_at: number,
+    success_message: string
 };
 
 export interface Ethereum {

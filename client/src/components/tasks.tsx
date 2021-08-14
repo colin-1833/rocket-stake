@@ -383,7 +383,7 @@ export const DefaultTask = (props: any) => {
                         }}>
                             <div onClick={() => task.set('increase_stake', [])} style={{
                                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                                width: (width - 40) / 2,
+                                width: (width - 45) / 2,
                                 height: button_section_height - 30,
                                 backgroundColor: constants.colors.button,
                                 borderRadius: 4,

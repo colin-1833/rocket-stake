@@ -4,6 +4,7 @@ import { ethers } from 'hardhat';
 import type { Signer, Contract, BigNumber } from 'ethers';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as web3_utils from 'web3-utils';
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-waffle';
 import 'hardhat-deploy';
@@ -73,7 +74,7 @@ export const use_contracts = (hre: HardhatRuntimeEnvironment): {
     deploy_mainnet: (opts: {
         rocket_pool_storage_address: string
     }) => Promise<any>,
-    deploy_stubbed_testnet: () => Promise<any>,
+    deploy_stubbed_testnet: (opts: { block_delay: number }) => Promise<any>,
     store: UseContractsStore
 } => {
     let store: UseContractsStore = {
@@ -89,7 +90,7 @@ export const use_contracts = (hre: HardhatRuntimeEnvironment): {
         users: []
     };
     return {
-        deploy_stubbed_testnet: (): Promise<void> => new Promise(async (resolve, reject) => {
+        deploy_stubbed_testnet: (opts: { block_delay: number }): Promise<void> => new Promise(async (resolve, reject) => {
             try {
                 const unnamed_signers = await hre.ethers.getUnnamedSigners();
                 store.deployer = unnamed_signers[0]
@@ -134,15 +135,18 @@ export const use_contracts = (hre: HardhatRuntimeEnvironment): {
                     }
                 );
                 await store.stubbed_contracts.RocketStorage(store.deployer).setUint(
-                    ethers.utils.solidityKeccak256(['string', 'string'], ['dao.protocol.setting.network', 'network.reth.deposit.delay']),
-                    6
+                    web3_utils.soliditySha3(
+                        web3_utils.soliditySha3('dao.protocol.setting.network'), 
+                        'network.reth.deposit.delay'
+                    ),
+                    opts.block_delay
                 );
                 await store.stubbed_contracts.RocketStorage(store.deployer).setAddress(
-                    ethers.utils.solidityKeccak256(['string', 'string'], ['contract.address', 'rocketTokenRETH']),
+                    web3_utils.soliditySha3('contract.address', 'rocketTokenRETH'),
                     store.stubbed_contracts.RocketTokenRETH(store.deployer).address
                 );
                 await store.stubbed_contracts.RocketStorage(store.deployer).setAddress(
-                    ethers.utils.solidityKeccak256(['string', 'string'], ['contract.address', 'rocketDepositPool']),
+                    web3_utils.soliditySha3('contract.address', 'rocketDepositPool'),
                     store.stubbed_contracts.RocketDepositPool(store.deployer).address
                 );
                 resolve();

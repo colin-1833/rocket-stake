@@ -20,6 +20,11 @@ const config: HardhatUserConfig = {
         hardhat: {
             chainId: 1337
         },
+        ropsten: {
+            chainId: 3,
+            url: process.env.ROPSTEN_INFURA,
+            accounts: [process.env.ROPSTEN_PRIVATE_KEY]
+        },
         goerli: {
             chainId: 5,
             url: process.env.GOERLI_INFURA,

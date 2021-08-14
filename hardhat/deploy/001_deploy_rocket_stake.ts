@@ -21,6 +21,7 @@ dotenv.config({ path: path_to_env });
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {
         deploy_live_testnet,
+        deploy_stubbed_testnet,
         deploy_mainnet
     } = utils.use_contracts(hre);
     if (hre.network.config.chainId === 1) {
@@ -33,6 +34,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         await deploy_live_testnet({
             rocket_pool_storage_address: process.env.GOERLI_ROCKET_POOL_STORAGE_ADDRESS
         });
+        return;
+    }
+    if (
+        hre.network.config.chainId === 3
+        || hre.network.config.chainId === 4
+        || hre.network.config.chainId === 42
+    ) {
+        await deploy_stubbed_testnet({ block_delay: 10 });
         return;
     }
     throw new Error('Unsupported testnet with chainId: ' + hre.network.config.chainId);

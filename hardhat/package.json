@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "deploy-ropsten": "rm -rf ./cache ./deployments/ropsten ./artifacts && npx hardhat deploy --network ropsten --export ../client/src/deployments/ropsten.json",
     "deploy-goerli": "rm -rf ./cache ./deployments/goerli ./artifacts && npx hardhat deploy --network goerli --export ../client/src/deployments/goerli.json",
     "deploy-prater": "rm -rf ./cache ./deployments/prater ./artifacts && npx hardhat deploy --network prater --export ../client/src/deployments/prater.json",
     "deploy-mainnet": "rm -rf ./cache ./artifacts && npx hardhat deploy --network mainnet --export ../client/src/deployments/mainnet.json",
@@ -31,6 +32,8 @@
   "dependencies": {
     "@types/node": "^16.3.2",
     "bluebird": "^3.7.2",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "web3": "^1.5.1",
+    "web3-utils": "^1.5.1"
   }
 }

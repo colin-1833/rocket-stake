@@ -29,7 +29,7 @@ const apply_lifecycles = (runtime: Runtime, func: () => Promise<void>): Promise<
     } catch (err) { reject(err) }
 });
 
-const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, overrides?: any): Promise<string> => new Promise(async (resolve, reject) => {
+const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, success_message: string, overrides?: any): Promise<string> => new Promise(async (resolve, reject) => {
     try {
         const {
             hardhat,
@@ -52,9 +52,20 @@ const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, 
         queries.remove('pending_tx');
         queries.remove('pending_tx_method');
         queries.remove('success_message');
-        ethereum.add_past_transaction({ status: 'pending', tx, hash: tx.hash, method, modified_at: Date.now() });
+        ethereum.add_past_transaction({ 
+            status: 'pending', 
+            success_message,
+            tx, 
+            hash: tx.hash, 
+            method, 
+            modified_at: Date.now() 
+        });
         task.set('', []);
         try {
+            await tx.wait(1);
+            await account.reload();
+            await tx.wait(2);
+            await account.reload();
             const confirmed_tx = await tx.wait(3);
             await account.reload();
             resolve(confirmed_tx.transactionHash);
@@ -64,10 +75,9 @@ const main_contract_call = (runtime: Runtime, method: string, args: Array<any>, 
             queries.remove('pending_tx_method');
             queries.remove('pending_tx_success_message');
             queries.remove('success_message');
-            toast.error(typeof err.message === 'string' ? (err.message.slice(0, 26) + '...') : (method + ' function failed.'))
-        } finally {
             ethereum.set_past_transaction_status(tx.hash, 'failed');
-        }
+            toast.error(typeof err.message === 'string' ? (err.message.slice(0, 26) + '...') : (method + ' function failed.'))
+        } 
     } catch (err) { reject(err) }
 });
 
@@ -89,8 +99,7 @@ export const withdraw_stake = async (params: {
                     return reject();
                 }
                 const success_message = `You successfully withdrew your ${stake_to_withdraw} ETH stake!`;
-                runtime.queries.add('pending_tx_success_message', success_message);
-                await main_contract_call(runtime, 'withdraw', [eth_as_big_number]);
+                await main_contract_call(runtime, 'withdraw', [eth_as_big_number], success_message);
                 resolve();
             } catch (err) { reject(err) }
         })
@@ -115,8 +124,7 @@ export const increase_stake = async (params: {
                     return reject();
                 }
                 const success_message = `You successfully increased your stake by ${increase_stake_total} ETH!`;
-                runtime.queries.add('pending_tx_success_message', success_message);
-                await main_contract_call(runtime, 'stake', [], { value: eth_as_big_number });
+                await main_contract_call(runtime, 'stake', [], success_message, { value: eth_as_big_number });
                 resolve();
             } catch (err) { reject(err) }
         })

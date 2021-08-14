@@ -114,7 +114,7 @@ contract RocketStake is IRocketStake {
         // rocket pool has a cooldown period after minting rETH 
         IRocketStorage rocket_storage = IRocketStorage(rocket_storage_address);
         require(
-            block.timestamp.sub(stakers[staker].reth_buyer.lastDepositBlock())
+            block.number.sub(stakers[staker].reth_buyer.lastDepositBlock())
                 > rocket_storage.getUint(keccak256(abi.encodePacked(keccak256("dao.protocol.setting.network"), "network.reth.deposit.delay"))), 
             "Rocket Pool will not let you move or withdraw your rETH yet."
         );

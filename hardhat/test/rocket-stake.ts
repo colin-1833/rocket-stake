@@ -21,7 +21,7 @@ describe('RocketStake', function () {
 
     describe('deploy stubbed network', function () {
         it('should instantiate network', async function () {
-            await deploy_stubbed_testnet();
+            await deploy_stubbed_testnet({ block_delay: 6 });
         });
     });
 
@@ -41,6 +41,8 @@ describe('RocketStake', function () {
             await (await store.primary_contracts.RocketStake(store.deployer)
                 .stake({ value: utils.parse_eth(10) })).wait(1);
 
+            await next_block();
+            
             try {
                 await (await store.primary_contracts.RocketStake(store.deployer)
                     .withdraw(utils.parse_eth(10))).wait(1);
@@ -61,6 +63,8 @@ describe('RocketStake', function () {
 
             await (await store.primary_contracts.RocketStake(store.deployer)
                 .withdraw(utils.parse_eth(10))).wait(1);
+            const [_last_deposit_block, _block_number, _deposit_delay] = await store.primary_contracts.RocketStake(store.deployer)
+                .depositDelay(await store.deployer.getAddress());
 
             expect(
                 utils.format_eth(

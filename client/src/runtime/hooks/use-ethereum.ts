@@ -64,10 +64,12 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
     const [connection_loading, setConnectionLoading] = useState(true);
     const [page_loading, setPageLoading] = useState(true);
     const [connected_chain_id, setConnectedChainId] = useState('');
-    const [connected_network_name, setConnectedNetworkName] = useState<NetworkName>('goerli');
+    const [connected_network_name, setConnectedNetworkName] = useState<NetworkName>(map_subdomain_to_network());
     const { color } = (constants.networks[connected_chain_id] || constants.networks['5']);
-    const past_transactions_storage_key = connected_address + '-ethereum-past-transactions';
-    const [past_transactions, setPastTransactions] = useState<Array<PastTransaction>>([]);
+    const past_transactions_storage_key = (connected_network_name + '-' + connected_address + '-ethereum-past-transactions').toLowerCase();
+    const [past_transactions, setPastTransactions] = useState<Array<PastTransaction>>(
+        JSON.parse(window.localStorage.getItem(past_transactions_storage_key) || "[]")
+    );
     const clear_data = async () => {
         setWeb3(null);
         setSigner(null);
@@ -112,73 +114,70 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
             setPageLoading(false);
         }
     };
-    const set_past_transaction_status = (tx_hash: string, status: PastTransactionStatus) => setPastTransactions((past_transactions) => past_transactions.map(
-        past_transaction => past_transaction.hash === tx_hash
-            ? Object.assign({}, past_transaction, { status, modified_at: Date.now() }) 
-            : past_transaction
-    ));
-    const remove_non_pending_transaction_queries = async (func: Function) => {
+    const set_past_transaction_status = (tx_hash: string, status: PastTransactionStatus) => {
+        const transition_func = (_past_transactions: Array<PastTransaction>) => _past_transactions.map(
+            _past_transaction => _past_transaction.hash === tx_hash
+                ? Object.assign({}, _past_transaction, { status, modified_at: Date.now() }) 
+                : _past_transaction
+        );
+        const found_past_transactions = JSON.parse(window.localStorage.getItem(past_transactions_storage_key) || "[]")
+        window.localStorage.setItem(
+            past_transactions_storage_key, 
+            JSON.stringify(
+                transition_func(found_past_transactions)
+            )
+        );
+        setPastTransactions((_past_transactions) => transition_func(_past_transactions))
+    };
+    const add_past_transaction = (pending_transaction: PastTransaction) => {
+        const found_past_transactions = JSON.parse(window.localStorage.getItem(past_transactions_storage_key) || "[]")
+        window.localStorage.setItem(
+            past_transactions_storage_key, 
+            JSON.stringify(
+                found_past_transactions
+                    .filter((found_past_transaction: PastTransaction) => found_past_transaction.hash !== pending_transaction.hash)
+                    .concat([pending_transaction])
+            )
+        );
+        setPastTransactions(_past_transactions =>
+            _past_transactions
+                .filter(_pending_transaction => _pending_transaction.hash !== pending_transaction.hash)
+                .concat([pending_transaction])
+        );
+        let interval = setInterval(() => remove_non_pending_transaction_queries(
+            pending_transaction,
+            () => clearInterval(interval)
+        ), 2500);
+    };
+    const remove_non_pending_transaction_queries = async (pending_transaction: PastTransaction, func: Function) => {
         const _web3 = new ethers.providers.Web3Provider(window.ethereum, 'any');
         if (_web3) {
-            const receipt: ContractReceipt = await _web3.getTransactionReceipt(queries.params.pending_tx);
+            const receipt: ContractReceipt = await _web3.getTransactionReceipt(pending_transaction.hash);
             if (receipt && receipt.blockNumber) {
-                if (queries.params.pending_tx_success_message) {
-                    queries.add('success_message', queries.params.pending_tx_success_message);
-                    queries.remove('pending_tx');
-                    queries.remove('pending_tx_method');
-                    queries.remove('pending_tx_success_message');
-                }
-                set_past_transaction_status(queries.params.pending_tx, 'succeeded');
+                set_past_transaction_status(pending_transaction.hash, 'succeeded');
+                queries.add('success_message', pending_transaction.success_message)
+                func();
             }
             if (receipt && receipt.status === 0) {
-                set_past_transaction_status(queries.params.pending_tx, 'failed');
+                set_past_transaction_status(pending_transaction.hash, 'failed');
                 func();
             }
         }
     };
     useEffect(() => {
-        if (connected_address) {
-            if (localStorage.getItem(past_transactions_storage_key)) {
-                JSON.parse(String(localStorage.getItem(past_transactions_storage_key)))
-                    .forEach((past_transaction: PastTransaction) => add_past_transaction(past_transaction))
+        const parsed_past_transactions = JSON.parse(window.localStorage.getItem(past_transactions_storage_key) || "[]");
+        parsed_past_transactions.forEach((parsed_past_transaction: PastTransaction) => {
+            if (parsed_past_transaction.status === 'pending') {
+                let interval = setInterval(() => remove_non_pending_transaction_queries(
+                    parsed_past_transaction,
+                    () => clearInterval(interval)
+                ), 2500);
             }
-        }
-    }, [connected_address])
-    useEffect(() => {
-        if (queries.params.pending_tx) {
-            add_past_transaction({ 
-                status: 'pending', 
-                hash: queries.params.pending_tx, 
-                method: queries.params.pending_tx_method ,
-                modified_at: Date.now()
-            });
-        }
-    }, []);
-    useEffect(() => {
-        if (queries.params.pending_tx) {
-            let interval = setInterval(() => remove_non_pending_transaction_queries(
-                () => clearInterval(interval)
-            ), 2500);
-            return () => clearInterval(interval);
-        }
-    }, [queries.params.pending_tx]);
-    useEffect(() => {
-        if (
-            past_transactions.length > 0 
-            && past_transactions.some(past_transaction => past_transaction.status === 'pending')
-        ) {
-            queries.add('pending_tx', past_transactions.slice().reverse()[0].hash);
-            queries.add('pending_tx_method', past_transactions.slice().reverse()[0].method);
-        }
-    }, [past_transactions.length]);
-    useEffect(() => {
-        if (connected_address) {
-            window.localStorage.setItem(
-                past_transactions_storage_key, 
-                JSON.stringify(past_transactions.filter(past_transaction => is_fresh(past_transaction)))
-            );
-        }
-    }, [JSON.stringify(past_transactions), connected_address])
+        })
+        setPastTransactions(
+            parsed_past_transactions
+        );
+    }, [past_transactions_storage_key])
     useEffect(() => {
         connect_metamask(null);
         if (typeof window.ethereum === 'undefined') {
@@ -206,13 +205,6 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
             setPageLoading(false);
         });
     }, []);
-    const add_past_transaction = (pending_transaction: PastTransaction) => {
-        setPastTransactions(_past_transactions =>
-            _past_transactions
-                .filter(_pending_transaction => _pending_transaction.hash !== pending_transaction.hash)
-                .concat([pending_transaction])
-        );
-    };
     return {
         past_transactions,
         add_past_transaction,

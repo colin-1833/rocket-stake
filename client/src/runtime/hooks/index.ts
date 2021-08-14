@@ -181,6 +181,9 @@ export const use_hardhat = (runtime: Pick<Runtime, 'queries' | 'ethereum'>) => {
     if (ethereum.connected_network.name === 'goerli') {
         return deployment_networks.goerli;
     }
+    if (ethereum.connected_network.name === 'ropsten') {
+        return deployment_networks.ropsten;
+    }
     return null;
 };
 

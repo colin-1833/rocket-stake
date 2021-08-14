@@ -23,7 +23,7 @@ function PendingTransactions(props: any) {
             marginTop: 20,
             backgroundColor: 'rgba(0, 0, 0, .15)',
             position: 'relative',
-            borderWidth: 1, borderStyle: 'solid', borderColor: 'rgba(255, 255, 255, .5)'
+            borderWidth: 1, borderStyle: 'solid', borderColor: constants.colors.background
         }}>
             <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -74,7 +74,7 @@ function PendingTransactions(props: any) {
             width: '100%',
             borderRadius: 9,
             marginTop: 20,
-            backgroundColor: 'white',
+            backgroundColor: 'rgba(255, 255, 255, .8)',
             position: 'relative',
             borderWidth: 1, borderStyle: 'solid', borderColor: 'rgba(255, 255, 255, .5)'
         }}>
@@ -94,7 +94,7 @@ function PendingTransactions(props: any) {
                         fontFamily: 'arial',
                         margin: 0, padding: 0,
                         marginBottom: 15
-                    }}>{`Confirmed function: ${past_transaction.method}`}</p>
+                    }}>{`This transaction succeeded: ${past_transaction.method}`}</p>
                     <p style={{
                         margin: 0, padding: 0,
                         color: constants.colors.background,
@@ -113,8 +113,9 @@ function PendingTransactions(props: any) {
             width: '100%',
             borderRadius: 9,
             marginTop: 20,
-            backgroundColor: constants.colors.error_red,
-            position: 'relative'
+            backgroundColor: 'rgba(240,84,84, .55)',
+            position: 'relative',
+            borderWidth: 1, borderStyle: 'solid', borderColor: constants.colors.error_red
         }}>
             <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -132,7 +133,7 @@ function PendingTransactions(props: any) {
                         fontFamily: 'arial',
                         margin: 0, padding: 0,
                         marginBottom: 15
-                    }}>{`Your last transaction failed!`}</p>
+                    }}>{`This transaction failed.`}</p>
                     <p style={{
                         margin: 0, padding: 0,
                         color: 'white',
@@ -149,7 +150,7 @@ function PendingTransactions(props: any) {
             display: 'flex', flexDirection: 'column',
             width: '100%'
         }}>
-            {past_transactions.map((past_transaction, i) => {
+            {past_transactions.slice().reverse().map((past_transaction, i) => {
                 if (past_transaction.status === 'failed') {
                     return failed_tx_ui(past_transaction, i);
                 }
