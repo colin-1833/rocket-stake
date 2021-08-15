@@ -97,7 +97,8 @@ export interface Queries {
     clear: () => void,
     remove: (key: string) => void,
     add: (key: string, val: any) => void,
-    params: { [key: string]: string }
+    params: { [key: string]: string },
+    reload_data: (cb: Function|undefined) => void
 }
 
 export interface Runtime {

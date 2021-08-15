@@ -156,13 +156,13 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
             const receipt: ContractReceipt = await _web3.getTransactionReceipt(pending_transaction.hash);
             if (receipt && receipt.blockNumber) {
                 set_past_transaction_status(pending_transaction.hash, 'succeeded');
-                queries.add('success_message', pending_transaction.success_message)
-                func();
+                queries.add('success_message', pending_transaction.success_message);
+                queries.reload_data(func);
             }
             if (receipt && receipt.status === 0) {
                 set_past_transaction_status(pending_transaction.hash, 'failed');
                 func();
-            }
+            } // 'https://ropsten.etherscan.io/address/0x4ae0ddd4be0094a52af8bbb6c8afb1ede6a29c3a?a=0xb89282e1ae6e496a4817298e8bf2e5cbf5a4b770'
         }
     };
     useEffect(() => {

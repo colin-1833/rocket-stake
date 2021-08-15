@@ -9,9 +9,11 @@ function PendingTransactions(props: any) {
     const runtime = use_runtime();
     const {
         ethereum,
-        constants
+        constants,
+        hardhat
     } = runtime;
     const {
+        connected_address,
         past_transactions
     } = ethereum;
     const pending_tx_ui = (past_transaction: PastTransaction, i: number) => (
@@ -21,9 +23,9 @@ function PendingTransactions(props: any) {
             width: '100%',
             borderRadius: 9,
             marginTop: 20,
-            backgroundColor: 'rgba(0, 0, 0, .15)',
+            backgroundColor: 'rgba(255, 255, 255, .6)',
             position: 'relative',
-            borderWidth: 1, borderStyle: 'solid', borderColor: constants.colors.background
+            borderWidth: 1, borderStyle: 'solid', borderColor: constants.colors.background_fade
         }}>
             <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -37,7 +39,7 @@ function PendingTransactions(props: any) {
                     <p style={{
                         fontSize: 16,
                         fontWeight: 'bold',
-                        color: 'rgba(255, 255, 255, 1)',
+                        color: constants.colors.background,
                         fontFamily: 'arial',
                         margin: 0, padding: 0,
                         marginBottom: 15
@@ -46,7 +48,7 @@ function PendingTransactions(props: any) {
                         }</p>
                     <p style={{
                         margin: 0, padding: 0,
-                        color: 'rgba(255, 255, 255, .9)',
+                        color: constants.colors.background,
                         fontFamily: 'arial',
                         fontSize: 13,
                         textDecoration: 'underline'
@@ -57,8 +59,8 @@ function PendingTransactions(props: any) {
                 }}>
                     <ReactLoaderSpinner
                         type="Oval"
-                        secondaryColor={constants.colors.card}
-                        color={constants.colors.card}
+                        secondaryColor={constants.colors.background}
+                        color={constants.colors.background}
                         height={30}
                         width={30}
                     />
@@ -192,7 +194,7 @@ function PendingTransactions(props: any) {
                 }
                 return null;
             })}
-            <div onClick={() => window.open(CONTAINER.get_etherscan_base(runtime), '_blank')} style={{
+            <div onClick={() => window.open(CONTAINER.get_etherscan_base(runtime) + '/address/' + hardhat.contracts.RocketStake.address + '?a=' + connected_address, '_blank')} style={{
                 cursor: 'pointer',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 width: '100%',

@@ -63,7 +63,7 @@ export const use_queries = (): Queries => {
     useEffect(() => {
         setParams(query_string.parse(window.location.search));
     }, [window.location.search]);
-    return {
+    const queries = {
         clear: () => {
             window.history.pushState(null, '', window.location.origin + window.location.pathname);
             setParams({});
@@ -106,6 +106,16 @@ export const use_queries = (): Queries => {
                 + (new_search ? ('?' + new_search) : '')
             );
             setParams(query_string.parse((new_search ? ('?' + new_search) : '')));
+        }
+    };
+    return {
+        ...queries,
+        reload_data: (cb: Function|undefined = () => null) => {
+            queries.add('reload_data', 'true');
+            setTimeout(() => {
+                queries.remove('reload_data');
+                cb();
+            }, 100)
         },
         params
     }
@@ -190,7 +200,8 @@ export const use_hardhat = (runtime: Pick<Runtime, 'queries' | 'ethereum'>) => {
 export const use_reth_collateral = (runtime: Pick<Runtime, 'queries' | 'ethereum' | 'hardhat'>): RethCollateral => {
     const {
         ethereum,
-        hardhat
+        hardhat,
+        queries
     } = runtime;
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -227,6 +238,18 @@ export const use_reth_collateral = (runtime: Pick<Runtime, 'queries' | 'ethereum
         setLoading(true);
         reload();
     }, [hardhat, ethereum.connected_network.expects, ethereum.connected_address, ethereum.connection_loading]);
+
+    useEffect(() => {
+        if (queries.params.reload_data === 'true') {
+            if (ethereum.connected_address === '') {
+                return;
+            }
+            setTimeout(() => {
+                reload();
+            }, 3000)
+        }
+    }, [queries.params.reload_data]);
+    
     return {
         total,
         loading,
@@ -237,7 +260,8 @@ export const use_reth_collateral = (runtime: Pick<Runtime, 'queries' | 'ethereum
 export const use_account = (runtime: Pick<Runtime, 'queries' | 'task' | 'ethereum' | 'hardhat' | 'constants'>): Account => {
     const {
         ethereum,
-        hardhat
+        hardhat,
+        queries
     } = runtime;
     const [
         loading,
@@ -309,6 +333,18 @@ export const use_account = (runtime: Pick<Runtime, 'queries' | 'task' | 'ethereu
         ethereum.connected_address,
         ethereum.connection_loading
     ]);
+
+    useEffect(() => {
+        if (queries.params.reload_data === 'true') {
+            if (ethereum.connected_address === '') {
+                return;
+            }
+            setTimeout(() => {
+                reload();
+            }, 3000)
+        }
+    }, [queries.params.reload_data]);
+
     return {
         loading,
         reload,
