@@ -404,7 +404,7 @@ export const DefaultTask = (props: any) => {
                             {account.staker.withdrawals_allowed ? (
                                 <div onClick={() => task.set('confirm_withdrawal', [])} style={{
                                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                                    width: (width - 40) / 2,
+                                    width: (width - 45) / 2,
                                     height: button_section_height - 30,
                                     marginLeft: 15,
                                     backgroundColor: constants.colors.button,
@@ -426,7 +426,7 @@ export const DefaultTask = (props: any) => {
                             ) : (
                                 <div style={{
                                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                                    width: (width - 40) / 2,
+                                    width: (width - 45) / 2,
                                     height: button_section_height - 30,
                                     marginLeft: 15,
                                     backgroundColor: 'rgba(180, 180, 180, 1)',
