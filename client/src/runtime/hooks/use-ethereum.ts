@@ -69,6 +69,7 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
     const past_transactions_storage_key = (connected_network_name + '-' + connected_address + '-ethereum-past-transactions').toLowerCase();
     const [past_transactions, setPastTransactions] = useState<Array<PastTransaction>>(
         JSON.parse(window.localStorage.getItem(past_transactions_storage_key) || "[]")
+            .filter((past_transaction: PastTransaction) => is_fresh(past_transaction))
     );
     const clear_data = async () => {
         setWeb3(null);
@@ -144,12 +145,12 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
                 .filter(_pending_transaction => _pending_transaction.hash !== pending_transaction.hash)
                 .concat([pending_transaction])
         );
-        let interval = setInterval(() => remove_non_pending_transaction_queries(
+        let interval = setInterval(() => check_and_handle_tx_status(
             pending_transaction,
             () => clearInterval(interval)
         ), 2500);
     };
-    const remove_non_pending_transaction_queries = async (pending_transaction: PastTransaction, func: Function) => {
+    const check_and_handle_tx_status = async (pending_transaction: PastTransaction, func: Function) => {
         const _web3 = new ethers.providers.Web3Provider(window.ethereum, 'any');
         if (_web3) {
             const receipt: ContractReceipt = await _web3.getTransactionReceipt(pending_transaction.hash);
@@ -168,7 +169,7 @@ const use_ethereum = (runtime: Pick<Runtime, 'queries'>): Ethereum => {
         const parsed_past_transactions = JSON.parse(window.localStorage.getItem(past_transactions_storage_key) || "[]");
         parsed_past_transactions.forEach((parsed_past_transaction: PastTransaction) => {
             if (parsed_past_transaction.status === 'pending') {
-                let interval = setInterval(() => remove_non_pending_transaction_queries(
+                let interval = setInterval(() => check_and_handle_tx_status(
                     parsed_past_transaction,
                     () => clearInterval(interval)
                 ), 2500);
